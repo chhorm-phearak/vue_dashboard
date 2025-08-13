@@ -54,6 +54,9 @@ import {
   Bus as BusIcon,
   School as SchoolIcon,
   Receipt as ReceiptIcon,
+  BookOutline as CurriculumnIcon ,
+  PeopleOutline as RoleIcon,
+  KeyOutline as UserAssignRoleIcon,
 } from "@vicons/ionicons5";
 
 import { useRouter, useRoute } from "vue-router";
@@ -149,7 +152,7 @@ export default defineComponent({
       {
         label: "User Assign Role",
         key: "UserAssignRole",
-        icon: renderIcon(SettingIcon),
+        icon: renderIcon(UserAssignRoleIcon),
       },
       {
         label: "Bus",
@@ -199,12 +202,17 @@ export default defineComponent({
       {
         label: "Role",
         key: "Role",
-        icon: renderIcon(SettingIcon),
+        icon: renderIcon(RoleIcon),
       },
       {
         label: "Schedule",
         key: "Schedule",
         icon: renderIcon(ScheduleIcon),
+      },
+      {
+        label: "Curriculumn",
+        key: "Curriculumn",
+        icon: renderIcon(CurriculumnIcon),
       },
       {
         label: "Teacher",
@@ -236,6 +244,7 @@ export default defineComponent({
         key: "AuthorizedPersonAssignStudent",
         icon: renderIcon(SettingIcon),
       },
+
 
       //setting last
       {

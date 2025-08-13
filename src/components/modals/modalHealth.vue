@@ -21,31 +21,20 @@
         Create Staff
       </div> -->
       <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
-        <n-form-item path="first_name" label="First Name">
-          <n-input v-model:value="model.first_name" @keydown.enter.prevent />
-        </n-form-item>
-        <n-form-item path="last_name" label="Last Name">
-          <n-input v-model:value="model.last_name" @keydown.enter.prevent />
-        </n-form-item>
-      </div>
-      <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
-        <n-form-item path="age" label="Age">
-          <n-input v-model:value="model.age" @keydown.enter.prevent />
-        </n-form-item>
-        <n-form-item path="gender" label="Gender">
+        <n-form-item path="student" label="Student">
           <n-select
-            v-model:value="model.gender"
+            v-model:value="model.student"
             placeholder="Select"
-            :options="genderOptions.selectGender"
+            :options="studentOptions.selectStudent"
           />
         </n-form-item>
-      </div>
-      <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
-        <n-form-item path="email" label="Email">
-          <n-input v-model:value="model.email" @keydown.enter.prevent />
+        <n-form-item path="incident_type" label="Incident Type">
+          <n-input v-model:value="model.incident_type" @keydown.enter.prevent />
         </n-form-item>
-        <n-form-item path="phone" label="Mobile">
-          <n-input v-model:value="model.phone" @keydown.enter.prevent />
+        </div>
+        <div class="grid gap-4 mb-2 md:grid-cols-1 w-full">
+        <n-form-item path="detail" label="Detail ">
+          <n-input v-model:value="model.detail" type="textarea" @keydown.enter.prevent />
         </n-form-item>
       </div>
       <div class="flex justify-end pt-3 pb-1">
@@ -89,72 +78,42 @@ export default defineComponent({
     const showModal = ref(props.modelValue);
 
     const formRef = ref(null);
+    // FIX: Model fields match form fields
     const modelRef = ref({
-      first_name: null,
-      last_name: null,
-      gender: null,
-      age: null,
-      email: null,
-      phone: null,
+      student: null,
+      incident_type: "",
+      detail: "",
     });
 
-    const genderOptions = {
-      selectGender: ["Male", "Female"].map((v) => ({
-        label: v,
-        value: v,
-      })),
+    // FIX: Add student options
+    const studentOptions = {
+      selectStudent: [
+        { label: "Student A", value: "student_a" },
+        { label: "Student B", value: "student_b" },
+      ],
     };
 
+    // FIX: Only validate fields in the form
     const rules = {
-      first_name: [
-        {
-          required: true,
-          trigger: ["blur", "input"],
-          message: "Please input First Name",
-        },
-      ],
-      last_name: [
-        {
-          required: true,
-          trigger: ["blur", "input"],
-          message: "Please input Last Name",
-        },
-      ],
-      age: [
-        {
-          required: true,
-          validator(rule, value) {
-            if (!value) {
-              return new Error("Age is required");
-            } else if (!/^\d*$/.test(value)) {
-              return new Error("Age should be an integer");
-            } else if (Number(value) < 18) {
-              return new Error("Age should be above 18");
-            }
-            return true;
-          },
-          trigger: ["input", "blur"],
-        },
-      ],
-      gender: [
+      student: [
         {
           required: true,
           trigger: ["blur", "change"],
-          message: "Please select Gender",
+          message: "Please select Student",
         },
       ],
-      email: [
+      incident_type: [
         {
           required: true,
           trigger: ["blur", "input"],
-          message: "Please input Email",
+          message: "Please input Incident Type",
         },
       ],
-      phone: [
+      detail: [
         {
           required: true,
           trigger: ["blur", "input"],
-          message: "Please input Phone Number",
+          message: "Please input Detail",
         },
       ],
     };
@@ -194,7 +153,7 @@ export default defineComponent({
       formRef,
       model: modelRef,
       rules,
-      genderOptions,
+      studentOptions,
       handleValidateButtonClick,
       CreateStaff,
     };
