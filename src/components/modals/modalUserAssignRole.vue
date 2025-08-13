@@ -21,31 +21,19 @@
         Create Staff
       </div> -->
       <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
-        <n-form-item path="first_name" label="First Name">
-          <n-input v-model:value="model.first_name" @keydown.enter.prevent />
-        </n-form-item>
-        <n-form-item path="last_name" label="Last Name">
-          <n-input v-model:value="model.last_name" @keydown.enter.prevent />
-        </n-form-item>
-      </div>
-      <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
-        <n-form-item path="age" label="Age">
-          <n-input v-model:value="model.age" @keydown.enter.prevent />
-        </n-form-item>
-        <n-form-item path="gender" label="Gender">
+        <n-form-item path="user" label="User">
           <n-select
-            v-model:value="model.gender"
+            v-model:value="model.user"
             placeholder="Select"
-            :options="genderOptions.selectGender"
+            :options="genderOptions.selectUser"
           />
         </n-form-item>
-      </div>
-      <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
-        <n-form-item path="email" label="Email">
-          <n-input v-model:value="model.email" @keydown.enter.prevent />
-        </n-form-item>
-        <n-form-item path="phone" label="Mobile">
-          <n-input v-model:value="model.phone" @keydown.enter.prevent />
+        <n-form-item path="role" label="Role">
+          <n-select
+            v-model:value="model.role"
+            placeholder="Select"
+            :options="genderOptions.selectRole"
+          />
         </n-form-item>
       </div>
       <div class="flex justify-end pt-3 pb-1">
@@ -85,76 +73,39 @@ export default defineComponent({
   emits: ["update:modelValue", "close"],
   setup(props, { emit }) {
     const message = useMessage();
-
     const showModal = ref(props.modelValue);
 
     const formRef = ref(null);
+    //  Updated model to match your template fields
     const modelRef = ref({
-      first_name: null,
-      last_name: null,
-      gender: null,
-      age: null,
-      email: null,
-      phone: null,
+      user: null,
+      role: null,
     });
-
+    //  Updated options to match the template's select fields
     const genderOptions = {
-      selectGender: ["Male", "Female"].map((v) => ({
+      selectUser: ["User 1", "User 2", "User 3"].map((v) => ({
+        label: v,
+        value: v,
+      })),
+      selectRole: ["Admin", "Editor", "Viewer"].map((v) => ({
         label: v,
         value: v,
       })),
     };
-
+    // Updated rules to validate the correct fields
     const rules = {
-      first_name: [
-        {
-          required: true,
-          trigger: ["blur", "input"],
-          message: "Please input First Name",
-        },
-      ],
-      last_name: [
-        {
-          required: true,
-          trigger: ["blur", "input"],
-          message: "Please input Last Name",
-        },
-      ],
-      age: [
-        {
-          required: true,
-          validator(rule, value) {
-            if (!value) {
-              return new Error("Age is required");
-            } else if (!/^\d*$/.test(value)) {
-              return new Error("Age should be an integer");
-            } else if (Number(value) < 18) {
-              return new Error("Age should be above 18");
-            }
-            return true;
-          },
-          trigger: ["input", "blur"],
-        },
-      ],
-      gender: [
+      user: [
         {
           required: true,
           trigger: ["blur", "change"],
-          message: "Please select Gender",
+          message: "Please select a user",
         },
       ],
-      email: [
+      role: [
         {
           required: true,
-          trigger: ["blur", "input"],
-          message: "Please input Email",
-        },
-      ],
-      phone: [
-        {
-          required: true,
-          trigger: ["blur", "input"],
-          message: "Please input Phone Number",
+          trigger: ["blur", "change"],
+          message: "Please select a role",
         },
       ],
     };
@@ -177,7 +128,6 @@ export default defineComponent({
       console.log("Close Modal User");
     }
 
-    // Sync prop with internal ref
     watch(
       () => props.modelValue,
       (val) => {

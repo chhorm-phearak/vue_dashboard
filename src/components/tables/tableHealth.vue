@@ -32,27 +32,82 @@
 <script>
 import { Search as SearchIcon } from "@vicons/ionicons5";
 import {
-  RemoveRedEyeFilled as View,
-  EditCalendarOutlined as Edit,
-  FreeCancellationTwotone as Delete,
+  RemoveRedEyeFilled as ViewIcon,
+  EditCalendarOutlined as EditIcon,
+  FreeCancellationTwotone as DeleteIcon,
 } from "@vicons/material";
 import { NButton, NPopover, useMessage } from "naive-ui";
-import { defineComponent, h, ref } from "vue";
+import { defineComponent, h, ref, computed } from "vue";
 
 export default defineComponent({
   setup() {
     const message = useMessage();
 
+    const search = ref("");
+    const page = ref(1);
+    const pageSize = 10;
+
+    // Sample Health data -- replace or fetch from API
+    const data = ref([
+      {
+        id: 1,
+        student: "Student A",
+        incident_type: "Fever",
+        detail: "High temperature recorded at 38.5°C",
+      },
+      {
+        id: 2,
+        student: "Student B",
+        incident_type: "Injury",
+        detail: "Scratched knee during recess",
+      },
+      {
+        id: 3,
+        student: "Student A",
+        incident_type: "Headache",
+        detail: "Complained about headache in class",
+      },
+      {
+        id: 4,
+        student: "Student B",
+        incident_type: "Allergy",
+        detail: "Mild allergic reaction to food",
+      },
+      {
+        id: 5,
+        student: "Student A",
+        incident_type: "Cold",
+        detail: "Sneezing and runny nose",
+      },
+      // add more sample records here as needed
+    ]);
+
+    const filteredData = computed(() => {
+      if (!search.value) return data.value;
+
+      const lower = search.value.toLowerCase();
+      return data.value.filter(
+        (item) =>
+          item.student.toLowerCase().includes(lower) ||
+          item.incident_type.toLowerCase().includes(lower) ||
+          item.detail.toLowerCase().includes(lower)
+      );
+    });
+
+    const pageCount = computed(() =>
+      Math.ceil(filteredData.value.length / pageSize)
+    );
+
     function viewRow(row) {
-      message.info(`View clicked for ID: ${row.id}`);
+      message.info(`View clicked for Incident ID: ${row.id}`);
     }
 
     function editRow(row) {
-      message.info(`Edit clicked for ID: ${row.id}`);
+      message.info(`Edit clicked for Incident ID: ${row.id}`);
     }
 
     function deleteRow(row) {
-      message.info(`Delete clicked for ID: ${row.id}`);
+      message.info(`Delete clicked for Incident ID: ${row.id}`);
     }
 
     function createColumns() {
@@ -61,41 +116,28 @@ export default defineComponent({
           title: "ID",
           key: "id",
           align: "center",
+          width: 60,
         },
         {
-          title: "First Name",
-          key: "first_name",
+          title: "Student",
+          key: "student",
           align: "center",
         },
         {
-          title: "Last Name",
-          key: "last_name",
+          title: "Incident Type",
+          key: "incident_type",
           align: "center",
         },
         {
-          title: "Gender",
-          key: "gender",
-          align: "center",
-        },
-        {
-          title: "Age",
-          key: "age",
-          align: "center",
-        },
-        {
-          title: "Email",
-          key: "email",
-          align: "center",
-        },
-        {
-          title: "Mobile",
-          key: "phone",
-          align: "center",
+          title: "Detail",
+          key: "detail",
+          align: "left",
         },
         {
           title: "Action",
           key: "actions",
           align: "center",
+          width: 160,
           render(row) {
             const whenScreen = window.innerWidth <= 1024;
             return h(
@@ -129,7 +171,7 @@ export default defineComponent({
                           },
                         },
                         {
-                          default: () => h(View, { class: "icon" }),
+                          default: () => h(ViewIcon, { class: "icon" }),
                         }
                       ),
                     default: () => h("span", null, "VIEW"),
@@ -154,7 +196,7 @@ export default defineComponent({
                           },
                         },
                         {
-                          default: () => h(Edit, { class: "icon" }),
+                          default: () => h(EditIcon, { class: "icon" }),
                         }
                       ),
                     default: () => h("span", null, "EDIT"),
@@ -178,7 +220,7 @@ export default defineComponent({
                             backgroundColor: "#F70202FF",
                           },
                         },
-                        { default: () => h(Delete, { class: "icon" }) }
+                        { default: () => h(DeleteIcon, { class: "icon" }) }
                       ),
                     default: () => h("span", null, "DELETE"),
                   }
@@ -190,133 +232,23 @@ export default defineComponent({
       ];
     }
 
-    function createData() {
-      return [
-        {
-          key: 1,
-          id: 1,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 2,
-          id: 2,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 3,
-          id: 3,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 4,
-          id: 4,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 5,
-          id: 5,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 6,
-          id: 6,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 7,
-          id: 7,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 8,
-          id: 8,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 9,
-          id: 9,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 10,
-          id: 10,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 11,
-          id: 11,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-      ];
-    }
-
     return {
       SearchIcon,
-      data: createData(),
+      data,
       columns: createColumns(),
+      filteredData,
       viewRow,
       editRow,
       deleteRow,
-      page: ref(2),
+      search,
+      page,
+      pageSize,
+      pageCount,
     };
   },
 });
 </script>
+
 <style>
 .icon {
   width: 20px;

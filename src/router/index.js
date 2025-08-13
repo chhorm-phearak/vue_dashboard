@@ -23,6 +23,7 @@ import studentPerformanceReport from "@/components/pages/studentPerformanceRepor
 import studentAssignBus from "@/components/pages/studentAssignBus.vue";
 import authorizedPerson from "@/components/pages/authorizedPerson.vue";
 import authorizedPersonAssignStudent from "@/components/pages/authorizedPersonAssignStudent.vue";
+import curriculumn from "../components/pages/curriculumn.vue";
 
 const routes = [
   {
@@ -150,6 +151,12 @@ const routes = [
     name: "AuthorizedPersonAssignStudent",
     component: authorizedPersonAssignStudent,
   },
+    {
+    path: "/curriculumn",
+    name: "Curriculumn",
+    component: curriculumn,
+  },
+
 
   //setting last
   {

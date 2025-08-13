@@ -30,6 +30,10 @@ import {
   NTable,
   NPopover,
   NDatePicker,
+  NUpload,
+  NUploadDragger,
+  NP,
+  NText
 } from "naive-ui";
 
 export const registerNaiveUI = () => {
@@ -65,6 +69,10 @@ export const registerNaiveUI = () => {
       NTable,
       NPopover,
       NDatePicker,
+      NUpload,
+      NUploadDragger,
+      NP,
+      NText
     ],
   });
 };

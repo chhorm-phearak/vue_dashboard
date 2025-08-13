@@ -1,34 +1,37 @@
 <template>
-  <!-- Data Table -->
-  <!-- h-[716px] -->
+  <!-- Schedule Table -->
   <div
     class="relative overflow-hidden h-[716px] shadow-md border border-gray-200 rounded-lg p-4 bg-white"
   >
+    <!-- Search -->
     <div class="flex justify-end">
       <div class="w-60 md:w-80 pb-4">
-        <n-input size="Medium" placeholder="Search">
+        <n-input v-model:value="searchQuery" placeholder="Search Schedule">
           <template #prefix>
             <n-icon :component="SearchIcon" />
           </template>
         </n-input>
       </div>
     </div>
+
+    <!-- Data Table -->
     <n-data-table
       class="border border-gray-100 rounded-md"
       :bordered="false"
       :single-line="false"
-      :single-column="false"
       :scroll-x="800"
       :max-height="540"
       :columns="columns"
-      :data="data"
+      :data="filteredData"
     />
+
+    <!-- Pagination -->
     <div class="flex justify-end pt-4">
-      <n-pagination v-model:page="page" :page-count="10" />
+      <n-pagination v-model:page="page" :page-count="totalPages" />
     </div>
   </div>
-  <!-- End Data Table -->
 </template>
+
 <script>
 import { Search as SearchIcon } from "@vicons/ionicons5";
 import {
@@ -37,76 +40,48 @@ import {
   FreeCancellationTwotone as Delete,
 } from "@vicons/material";
 import { NButton, NPopover, useMessage } from "naive-ui";
-import { defineComponent, h, ref } from "vue";
+import { defineComponent, h, ref, computed } from "vue";
 
 export default defineComponent({
   setup() {
     const message = useMessage();
+    const searchQuery = ref("");
+    const page = ref(1);
+    const itemsPerPage = 10;
 
     function viewRow(row) {
-      message.info(`View clicked for ID: ${row.id}`);
+      message.info(`Viewing schedule: ${row.title}`);
     }
 
     function editRow(row) {
-      message.info(`Edit clicked for ID: ${row.id}`);
+      message.info(`Editing schedule: ${row.title}`);
     }
 
     function deleteRow(row) {
-      message.info(`Delete clicked for ID: ${row.id}`);
+      message.warning(`Deleting schedule: ${row.title}`);
     }
 
     function createColumns() {
       return [
+        { title: "ID", key: "id", align: "center" },
+        { title: "Title", key: "title", align: "center" },
+        { title: "Date", key: "date", align: "center" },
+        { title: "Time", key: "time", align: "center" },
+        { title: "Location", key: "location", align: "center" },
         {
-          title: "ID",
-          key: "id",
-          align: "center",
-        },
-        {
-          title: "First Name",
-          key: "first_name",
-          align: "center",
-        },
-        {
-          title: "Last Name",
-          key: "last_name",
-          align: "center",
-        },
-        {
-          title: "Gender",
-          key: "gender",
-          align: "center",
-        },
-        {
-          title: "Age",
-          key: "age",
-          align: "center",
-        },
-        {
-          title: "Email",
-          key: "email",
-          align: "center",
-        },
-        {
-          title: "Mobile",
-          key: "phone",
-          align: "center",
-        },
-        {
-          title: "Action",
+          title: "Actions",
           key: "actions",
           align: "center",
           render(row) {
-            const whenScreen = window.innerWidth <= 1024;
+            const isMobile = window.innerWidth <= 1024;
             return h(
               "div",
               {
                 style: {
                   display: "flex",
-                  flexDirection: whenScreen ? "column" : "row",
+                  flexDirection: isMobile ? "column" : "row",
                   gap: "5px",
                   justifyContent: "center",
-                  backgroundColor: "transparent",
                 },
               },
               [
@@ -122,17 +97,14 @@ export default defineComponent({
                           circle: true,
                           onClick: () => viewRow(row),
                           style: {
-                            width: "35px",
-                            height: "35px",
+                            backgroundColor: "#3794F2",
+                            color: "white",
                             border: "1px solid gray",
-                            backgroundColor: "#3794F2FF",
                           },
                         },
-                        {
-                          default: () => h(View, { class: "icon" }),
-                        }
+                        { default: () => h(View, { class: "icon" }) }
                       ),
-                    default: () => h("span", null, "VIEW"),
+                    default: () => "VIEW",
                   }
                 ),
                 h(
@@ -147,17 +119,14 @@ export default defineComponent({
                           circle: true,
                           onClick: () => editRow(row),
                           style: {
-                            width: "35px",
-                            height: "35px",
+                            backgroundColor: "#F2378E",
+                            color: "white",
                             border: "1px solid gray",
-                            backgroundColor: "#F2378EFF",
                           },
                         },
-                        {
-                          default: () => h(Edit, { class: "icon" }),
-                        }
+                        { default: () => h(Edit, { class: "icon" }) }
                       ),
-                    default: () => h("span", null, "EDIT"),
+                    default: () => "EDIT",
                   }
                 ),
                 h(
@@ -172,15 +141,14 @@ export default defineComponent({
                           circle: true,
                           onClick: () => deleteRow(row),
                           style: {
-                            width: "35px",
-                            height: "35px",
+                            backgroundColor: "#F70202",
+                            color: "white",
                             border: "1px solid gray",
-                            backgroundColor: "#F70202FF",
                           },
                         },
                         { default: () => h(Delete, { class: "icon" }) }
                       ),
-                    default: () => h("span", null, "DELETE"),
+                    default: () => "DELETE",
                   }
                 ),
               ]
@@ -191,136 +159,52 @@ export default defineComponent({
     }
 
     function createData() {
-      return [
-        {
-          key: 1,
-          id: 1,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 2,
-          id: 2,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 3,
-          id: 3,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 4,
-          id: 4,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 5,
-          id: 5,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 6,
-          id: 6,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 7,
-          id: 7,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 8,
-          id: 8,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 9,
-          id: 9,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 10,
-          id: 10,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 11,
-          id: 11,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-      ];
+      return Array.from({ length: 25 }, (_, i) => ({
+        key: i + 1,
+        id: i + 1,
+        title: `Meeting ${i + 1}`,
+        date: "2025-08-13",
+        time: "10:00 AM",
+        location: "Conference Room",
+      }));
     }
+
+    const data = ref(createData());
+
+    const filteredData = computed(() => {
+      const start = (page.value - 1) * itemsPerPage;
+      const end = start + itemsPerPage;
+      return data.value
+        .filter((row) =>
+          row.title.toLowerCase().includes(searchQuery.value.toLowerCase())
+        )
+        .slice(start, end);
+    });
+
+    const totalPages = computed(() =>
+      Math.ceil(
+        data.value.filter((row) =>
+          row.title.toLowerCase().includes(searchQuery.value.toLowerCase())
+        ).length / itemsPerPage
+      )
+    );
 
     return {
       SearchIcon,
-      data: createData(),
+      searchQuery,
+      data,
+      filteredData,
       columns: createColumns(),
-      viewRow,
-      editRow,
-      deleteRow,
-      page: ref(2),
+      page,
+      totalPages,
     };
   },
 });
 </script>
+
 <style>
 .icon {
   width: 20px;
   height: 20px;
-  color: whitesmoke;
 }
 </style>

@@ -20,32 +20,15 @@
       <!-- <div class="w-full text-start font-bold text-lg mb-8 mt-5">
         Create Staff
       </div> -->
-      <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
-        <n-form-item path="first_name" label="First Name">
-          <n-input v-model:value="model.first_name" @keydown.enter.prevent />
+      <div class="grid gap-4 mb-2 md:grid-cols-1 w-full">
+        <n-form-item path="name" label="Name">
+          <n-input v-model:value="model.name" @keydown.enter.prevent />
         </n-form-item>
-        <n-form-item path="last_name" label="Last Name">
-          <n-input v-model:value="model.last_name" @keydown.enter.prevent />
+        <n-form-item path="guard_name" label="Guard Name">
+          <n-input v-model:value="model.guard_name" @keydown.enter.prevent />
         </n-form-item>
-      </div>
-      <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
-        <n-form-item path="age" label="Age">
-          <n-input v-model:value="model.age" @keydown.enter.prevent />
-        </n-form-item>
-        <n-form-item path="gender" label="Gender">
-          <n-select
-            v-model:value="model.gender"
-            placeholder="Select"
-            :options="genderOptions.selectGender"
-          />
-        </n-form-item>
-      </div>
-      <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
-        <n-form-item path="email" label="Email">
-          <n-input v-model:value="model.email" @keydown.enter.prevent />
-        </n-form-item>
-        <n-form-item path="phone" label="Mobile">
-          <n-input v-model:value="model.phone" @keydown.enter.prevent />
+        <n-form-item path="tag" label="Tag">
+          <n-input v-model:value="model.tag" @keydown.enter.prevent />
         </n-form-item>
       </div>
       <div class="flex justify-end pt-3 pb-1">
@@ -90,71 +73,31 @@ export default defineComponent({
 
     const formRef = ref(null);
     const modelRef = ref({
-      first_name: null,
-      last_name: null,
-      gender: null,
-      age: null,
-      email: null,
-      phone: null,
+      name: null,
+      guard_name: null,
+      tag: null,
     });
 
-    const genderOptions = {
-      selectGender: ["Male", "Female"].map((v) => ({
-        label: v,
-        value: v,
-      })),
-    };
-
     const rules = {
-      first_name: [
+      name: [
         {
           required: true,
           trigger: ["blur", "input"],
-          message: "Please input First Name",
+          message: "Please input Role Name",
         },
       ],
-      last_name: [
+      guard_name: [
         {
           required: true,
           trigger: ["blur", "input"],
-          message: "Please input Last Name",
+          message: "Please input Guard Name",
         },
       ],
-      age: [
-        {
-          required: true,
-          validator(rule, value) {
-            if (!value) {
-              return new Error("Age is required");
-            } else if (!/^\d*$/.test(value)) {
-              return new Error("Age should be an integer");
-            } else if (Number(value) < 18) {
-              return new Error("Age should be above 18");
-            }
-            return true;
-          },
-          trigger: ["input", "blur"],
-        },
-      ],
-      gender: [
-        {
-          required: true,
-          trigger: ["blur", "change"],
-          message: "Please select Gender",
-        },
-      ],
-      email: [
+      tag: [
         {
           required: true,
           trigger: ["blur", "input"],
-          message: "Please input Email",
-        },
-      ],
-      phone: [
-        {
-          required: true,
-          trigger: ["blur", "input"],
-          message: "Please input Phone Number",
+          message: "Please input Tag",
         },
       ],
     };
@@ -177,7 +120,6 @@ export default defineComponent({
       console.log("Close Modal User");
     }
 
-    // Sync prop with internal ref
     watch(
       () => props.modelValue,
       (val) => {
@@ -194,7 +136,6 @@ export default defineComponent({
       formRef,
       model: modelRef,
       rules,
-      genderOptions,
       handleValidateButtonClick,
       CreateStaff,
     };

@@ -31,67 +31,35 @@
 </template>
 <script>
 import { Search as SearchIcon } from "@vicons/ionicons5";
-import {
-  RemoveRedEyeFilled as View,
-  EditCalendarOutlined as Edit,
-  FreeCancellationTwotone as Delete,
-} from "@vicons/material";
+import { RemoveRedEyeFilled as View, EditCalendarOutlined as Edit, FreeCancellationTwotone as Delete } from "@vicons/material";
 import { NButton, NPopover, useMessage } from "naive-ui";
-import { defineComponent, h, ref } from "vue";
+import { defineComponent, h, ref, computed } from "vue";
 
 export default defineComponent({
   setup() {
     const message = useMessage();
 
+    const page = ref(1);
+    const pageSize = 10;
+    const searchQuery = ref("");
+
     function viewRow(row) {
-      message.info(`View clicked for ID: ${row.id}`);
+      message.info(`View clicked for Role ID: ${row.id}`);
     }
-
     function editRow(row) {
-      message.info(`Edit clicked for ID: ${row.id}`);
+      message.info(`Edit clicked for Role ID: ${row.id}`);
     }
-
     function deleteRow(row) {
-      message.info(`Delete clicked for ID: ${row.id}`);
+      message.info(`Delete clicked for Role ID: ${row.id}`);
     }
 
     function createColumns() {
       return [
-        {
-          title: "ID",
-          key: "id",
-          align: "center",
-        },
-        {
-          title: "First Name",
-          key: "first_name",
-          align: "center",
-        },
-        {
-          title: "Last Name",
-          key: "last_name",
-          align: "center",
-        },
-        {
-          title: "Gender",
-          key: "gender",
-          align: "center",
-        },
-        {
-          title: "Age",
-          key: "age",
-          align: "center",
-        },
-        {
-          title: "Email",
-          key: "email",
-          align: "center",
-        },
-        {
-          title: "Mobile",
-          key: "phone",
-          align: "center",
-        },
+        { title: "ID", key: "id", align: "center" },
+        { title: "Name", key: "name", align: "center" },
+        { title: "Guard Name", key: "guard_name", align: "center" },
+        { title: "Tag", key: "tag", align: "center" },
+        { title: "Created At", key: "created_at", align: "center" },
         {
           title: "Action",
           key: "actions",
@@ -106,7 +74,6 @@ export default defineComponent({
                   flexDirection: whenScreen ? "column" : "row",
                   gap: "5px",
                   justifyContent: "center",
-                  backgroundColor: "transparent",
                 },
               },
               [
@@ -125,12 +92,10 @@ export default defineComponent({
                             width: "35px",
                             height: "35px",
                             border: "1px solid gray",
-                            backgroundColor: "#3794F2FF",
+                            backgroundColor: "#3794F2",
                           },
                         },
-                        {
-                          default: () => h(View, { class: "icon" }),
-                        }
+                        { default: () => h(View, { class: "icon" }) }
                       ),
                     default: () => h("span", null, "VIEW"),
                   }
@@ -150,12 +115,10 @@ export default defineComponent({
                             width: "35px",
                             height: "35px",
                             border: "1px solid gray",
-                            backgroundColor: "#F2378EFF",
+                            backgroundColor: "#F2378E",
                           },
                         },
-                        {
-                          default: () => h(Edit, { class: "icon" }),
-                        }
+                        { default: () => h(Edit, { class: "icon" }) }
                       ),
                     default: () => h("span", null, "EDIT"),
                   }
@@ -175,7 +138,7 @@ export default defineComponent({
                             width: "35px",
                             height: "35px",
                             border: "1px solid gray",
-                            backgroundColor: "#F70202FF",
+                            backgroundColor: "#F70202",
                           },
                         },
                         { default: () => h(Delete, { class: "icon" }) }
@@ -192,131 +155,40 @@ export default defineComponent({
 
     function createData() {
       return [
-        {
-          key: 1,
-          id: 1,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 2,
-          id: 2,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 3,
-          id: 3,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 4,
-          id: 4,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 5,
-          id: 5,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 6,
-          id: 6,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 7,
-          id: 7,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 8,
-          id: 8,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 9,
-          id: 9,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 10,
-          id: 10,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 11,
-          id: 11,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
+        { id: 1, name: "Admin", guard_name: "web", tag: "Super User", created_at: "2025-08-01" },
+        { id: 2, name: "Editor", guard_name: "web", tag: "Content Manager", created_at: "2025-08-02" },
+        { id: 3, name: "Viewer", guard_name: "web", tag: "Read Only", created_at: "2025-08-03" },
+        { id: 4, name: "Moderator", guard_name: "web", tag: "Community Manager", created_at: "2025-08-04" },
+        { id: 5, name: "Support", guard_name: "web", tag: "Customer Service", created_at: "2025-08-05" },
+        { id: 6, name: "Developer", guard_name: "api", tag: "Tech Team", created_at: "2025-08-06" },
       ];
     }
 
+    const data = createData();
+
+    const filteredData = computed(() => {
+      if (!searchQuery.value) return data;
+      return data.filter(
+        (role) =>
+          role.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+          role.guard_name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+          role.tag.toLowerCase().includes(searchQuery.value.toLowerCase())
+      );
+    });
+
     return {
       SearchIcon,
-      data: createData(),
+      data,
+      filteredData,
       columns: createColumns(),
-      viewRow,
-      editRow,
-      deleteRow,
-      page: ref(2),
+      page,
+      pageSize,
+      searchQuery,
     };
   },
 });
 </script>
+
 <style>
 .icon {
   width: 20px;
