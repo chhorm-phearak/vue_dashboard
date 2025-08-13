@@ -83,6 +83,7 @@ import axios from "axios";
 import { defineComponent, ref, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
+import { setToken } from "./../../plugins/authentication"
 
 export default defineComponent({
   props: {
@@ -163,9 +164,8 @@ export default defineComponent({
       await axios
         .post(import.meta.env.VITE_API_SERVER + "/api/login", formLogin)
         .then((res) => {
-          if (res.data.success) {
-            localStorage.setItem("token", res.data.authorization.token);
-            store.dispatch("user/setToken", token);
+          if (res.data.status) {
+            setToken(res.data.token)
             //router.push("Dashboard");
             router.push({ name: "Dashboard" });
             //window.location.replace("Dashboard");

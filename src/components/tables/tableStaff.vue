@@ -65,8 +65,8 @@
         <n-form-item label="Email" path="email">
           <n-input v-model:value="editForm.email" />
         </n-form-item>
-        <n-form-item label="Phone" path="phone">
-          <n-input v-model:value="editForm.phone" />
+        <n-form-item label="phone_number" path="phone_number">
+          <n-input v-model:value="editForm.phone_number" />
         </n-form-item>
       </n-form>
       <template #action>
@@ -117,7 +117,12 @@ export default defineComponent({
     NButton,
     NPopover,
   },
-  setup() {
+  props:{
+    records: ref([]),
+  },
+  setup(props) {
+    console.log( props.records )
+
     const message = useMessage();
     const page = ref(1);
     const pageSize = "10";
@@ -132,7 +137,7 @@ export default defineComponent({
         gender: "Male",
         age: 24,
         email: "phnompenh@gmail.com",
-        phone: "+855 12 348 034",
+        phone_number: "+855 12 348 034",
       },
       {
         id: 2,
@@ -141,7 +146,7 @@ export default defineComponent({
         gender: "Female",
         age: 28,
         email: "sophea@example.com",
-        phone: "+855 98 765 432",
+        phone_number: "+855 98 765 432",
       },
       {
         id: 3,
@@ -150,7 +155,7 @@ export default defineComponent({
         gender: "Male",
         age: 41,
         email: "jonh@example.com",
-        phone: "+855 78 230 402",
+        phone_number: "+855 78 230 402",
       },
       {
         id: 4,
@@ -159,7 +164,7 @@ export default defineComponent({
         gender: "Male",
         age: 24,
         email: "phnompenh@gmail.com",
-        phone: "+855 12 348 034",
+        phone_number: "+855 12 348 034",
       },
       {
         id: 5,
@@ -168,7 +173,7 @@ export default defineComponent({
         gender: "Female",
         age: 28,
         email: "sophea@example.com",
-        phone: "+855 98 765 432",
+        phone_number: "+855 98 765 432",
       },
       {
         id: 6,
@@ -177,7 +182,7 @@ export default defineComponent({
         gender: "Male",
         age: 41,
         email: "jonh@example.com",
-        phone: "+855 78 230 402",
+        phone_number: "+855 78 230 402",
       },
       {
         id: 7,
@@ -186,7 +191,7 @@ export default defineComponent({
         gender: "Male",
         age: 24,
         email: "phnompenh@gmail.com",
-        phone: "+855 12 348 034",
+        phone_number: "+855 12 348 034",
       },
       {
         id: 8,
@@ -195,7 +200,7 @@ export default defineComponent({
         gender: "Female",
         age: 28,
         email: "sophea@example.com",
-        phone: "+855 98 765 432",
+        phone_number: "+855 98 765 432",
       },
       {
         id: 9,
@@ -204,20 +209,19 @@ export default defineComponent({
         gender: "Male",
         age: 41,
         email: "jonh@example.com",
-        phone: "+855 78 230 402",
+        phone_number: "+855 78 230 402",
       },
     ]);
 
     // Computed filtered + paged
     const filteredData = computed(() => {
       const val = search.value.toLowerCase();
-      if (!val) return data;
-      return data.filter(
-        (u) =>
-          u.first_name.toLowerCase().includes(val) ||
-          u.last_name.toLowerCase().includes(val) ||
-          u.email.toLowerCase().includes(val)
-      );
+        return props.records.filter(
+          (u) =>
+            u.first_name.toLowerCase().includes(val) ||
+            u.last_name.toLowerCase().includes(val) ||
+            u.email.toLowerCase().includes(val)
+        );
     });
 
     const pageCount = computed(() =>
@@ -239,7 +243,7 @@ export default defineComponent({
       gender: "",
       age: null,
       email: "",
-      phone: "",
+      phone_number: "",
     });
 
     // Modal states
@@ -255,7 +259,7 @@ export default defineComponent({
       gender: "",
       age: null,
       email: "",
-      phone: "",
+      phone_number: "",
     });
     const genderOptions = [
       { label: "Male", value: "Male" },
@@ -290,8 +294,8 @@ export default defineComponent({
           trigger: "blur",
         },
       ],
-      phone: [
-        { required: true, message: "Phone is required", trigger: "blur" },
+      phone_number: [
+        { required: true, message: "phone_number is required", trigger: "blur" },
       ],
     };
 
@@ -306,7 +310,7 @@ export default defineComponent({
         { title: "Gender", key: "gender", align: "center" },
         { title: "Age", key: "age", align: "center" },
         { title: "Email", key: "email", align: "center" },
-        { title: "Phone", key: "phone", align: "center" },
+        { title: "phone_number", key: "phone_number", align: "center" },
         {
           title: "Actions",
           key: "actions",

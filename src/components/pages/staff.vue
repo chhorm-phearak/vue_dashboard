@@ -16,12 +16,12 @@
       </div>
     </div>
     <ModalStaff v-model:modelValue="showModal" @close="handleClose" />
-    <TableStaff />
+    <TableStaff :records="table.records" />
   </MainApp>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref , reactive } from "vue";
 import { AddCircleSharp as AddNew, Storefront } from "@vicons/ionicons5";
 import MainApp from "@/components/mainApp.vue";
 import ModalStaff from "@/components/modals/modalStaff.vue";
@@ -36,9 +36,21 @@ function handleClose() {
 }
 
 const store = useStore();
-store.dispatch("staff/list").then((response) => {
+
+const table = reactive({
+  page: 1, 
+  perPage: 10,
+  search: '',
+  records: []
+})
+
+store.dispatch("staff/list",{
+  page: 1 ,
+  perPage: 10 , 
+  search: ''
+}).then((response) => {
   if (response.status === 200) {
-    setUser(response.data);
+    table.records = response.data.data;
   } else {
     console.error("Failed to fetch staffs", response);
   }

@@ -25,7 +25,7 @@ export const getToken = () => {
 };
 export const getAuthorization = () => {
   try {
-    return getToken().token_type + " " + getToken().access_token;
+    return getToken().type_token + " " + getToken().access_token;
   } catch (error) {
     console.log(error);
   }
@@ -39,7 +39,7 @@ export const getAccessToken = () => {
 };
 export const getAccessTokenType = () => {
   try {
-    return getToken().token_type;
+    return getToken().type_token;
   } catch (error) {
     console.log(error);
   }
