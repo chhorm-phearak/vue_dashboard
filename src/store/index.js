@@ -2,7 +2,8 @@
 import { createStore } from "vuex";
 
 // call from user modules ot register
-import user from "./modules/user";
+import user from "@/store/modules/user";
+import staff from "@/store/modules/staff";
 
 export default createStore({
   state: {
@@ -10,5 +11,6 @@ export default createStore({
   },
   modules: {
     user,
+    staff,
   },
 });

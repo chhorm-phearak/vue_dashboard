@@ -22,10 +22,11 @@
 
 <script setup>
 import { ref } from "vue";
-import { AddCircleSharp as AddNew } from "@vicons/ionicons5";
+import { AddCircleSharp as AddNew, Storefront } from "@vicons/ionicons5";
 import MainApp from "@/components/mainApp.vue";
 import ModalStaff from "@/components/modals/modalStaff.vue";
 import TableStaff from "@/components/tables/tableStaff.vue";
+import { useStore } from 'vuex';
 
 const showModal = ref(false);
 
@@ -33,4 +34,14 @@ function handleClose() {
   showModal.value = false;
   console.log("Modal closed from parent");
 }
+
+const store = useStore();
+store.dispatch("staff/list").then((response) => {
+  if (response.status === 200) {
+    setUser(response.data);
+  } else {
+    console.error("Failed to fetch staffs", response);
+  }
+});
+
 </script>
