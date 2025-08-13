@@ -6,24 +6,6 @@
     <span class="font-bold text-xl text-[#4C524F] hover:text-[#18A058]">
       System Attendance
     </span>
-    <!-- <n-tooltip
-      placement="bottom"
-      trigger="hover"
-      class="bg-white border-1 border-gray-500 text-gray-600"
-    >
-      <template #trigger>
-        <n-button
-          style="width: 40px; height: 40px"
-          circle
-          @click="showModal = true"
-        >
-          <n-icon size="24" color="#414141">
-            <component :is="PersonUser" />
-          </n-icon>
-        </n-button>
-      </template>
-      <span> LOGIN </span>
-    </n-tooltip> -->
     <n-popover placement="bottom" trigger="hover">
       <template #trigger>
         <n-button

@@ -48,6 +48,9 @@ const routes = [
     path: "/staff",
     name: "Staff",
     component: staff,
+    meta: {
+      requiresAuth: true,
+    },
   },
   {
     path: "/attendance",
@@ -151,12 +154,11 @@ const routes = [
     name: "AuthorizedPersonAssignStudent",
     component: authorizedPersonAssignStudent,
   },
-    {
+  {
     path: "/curriculumn",
     name: "Curriculumn",
     component: curriculumn,
   },
-
 
   //setting last
   {

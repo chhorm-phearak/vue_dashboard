@@ -20,10 +20,10 @@
         Login Your Account
       </div>
       <div class="grid gap-3 mb-2 md:grid-cols-1 w-full">
-        <n-form-item path="username" label="Username">
+        <n-form-item path="email" label="Username">
           <n-input
             class="!rounded-md"
-            v-model:value="model.username"
+            v-model:value="model.email"
             size="large"
             @keydown.enter.prevent
           />
@@ -36,7 +36,7 @@
             type="password"
             show-password-on="click"
             placeholder="Custom Password Toggle Icon"
-            :maxlength="8"
+            :maxlength="18"
             @keydown.enter.prevent
           >
             <!-- @input="handlePasswordInput" -->
@@ -79,7 +79,8 @@ import {
   EyeSharp as EyeIcon,
   EyeOffSharp as EyeOffIcon,
 } from "@vicons/ionicons5";
-import { defineComponent, ref, watch, computed } from "vue";
+import axios from "axios";
+import { defineComponent, ref, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
@@ -101,17 +102,19 @@ export default defineComponent({
 
     const showModal = ref(props.modelValue);
     const formRef = ref(null);
-    const modelRef = ref({
-      username: null,
-      password: null,
+
+    const formLogin = reactive({
+      email: "",
+      password: "",
     });
+    const error = ref("");
 
     const rules = {
-      username: [
+      email: [
         {
           required: true,
           trigger: ["blur", "input"],
-          message: "Username is required",
+          message: "Email is required",
         },
       ],
       password: [
@@ -152,35 +155,31 @@ export default defineComponent({
       emit("update:modelValue", val);
     });
 
-    const submitLogin = () => {
-      router.push("dashboard"); //route name
+    // const submitLogin = () => {
+    //   router.push("Dashboard"); //route name
+    // };
+
+    const submitLogin = async () => {
+      await axios
+        .post(import.meta.env.VITE_API_SERVER + "/api/login", formLogin)
+        .then((res) => {
+          if (res.data.success) {
+            localStorage.setItem("token", res.data.authorization.token);
+            store.dispatch("user/setToken", token);
+            //router.push("Dashboard");
+            router.push({ name: "Dashboard" });
+            //window.location.replace("Dashboard");
+          } else {
+            error.value = res.data.message;
+          }
+        });
     };
-
-    //Test read data from state in modules
-    console.log(store.getters["getName"]); // Default no name undefined
-    //Test set data to state in modules
-    store.commit("setName", "Step-2"); // Step-2 + Updated setName by commit
-    //Test call function to execute and request data from server
-    store
-      .dispatch("updateName", {})
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-
-    //console.log(store.getters["setRecord"]);
-    //store.commit("setRecord", "Step-2"); // Step-2 + Updated setRecord by commit
-
-    //console.log(store.getters["setRecords"]);
-    //store.commit("setRecords", "Step-2"); // Step-2 + Updated setRecords by commit
 
     return {
       showModal,
       handleClose,
       formRef,
-      model: modelRef,
+      model: formLogin,
       rules,
       EyeIcon,
       EyeOffIcon,

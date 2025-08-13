@@ -1,104 +1,41 @@
 import crud from "../../api/crud";
+import { setToken } from "../../plugins/authentication";
 
 // state (Property is an name of Attribute)
 const state = {
-  model: {
-    name: "My name is Chhorm Phearak",
-    title: "I am admin",
-  },
-  // records: [],
-  // record: null,
-  records: null,
-  record: null,
-  name: "Default no name",
+  token: localStorage.getItem("token") || 0,
 };
 
 // getters (read Value from from state)
 const getters = {
-  // getRecords(state, getters, rootState) {
-  //   return state.records;
+  getToken: (state) => state.token,
+  // getToken: function (state) {
+  //   return state.token;
   // },
-  // getRecord(state, getters, rootState) {
-  //   return state.record;
-  // },
-  setRecords(state, getters, rootState) {
-    return state.records;
-  },
-  setRecord(state, getters, rootState) {
-    return state.record;
-  },
-  getName(state, getters, rootState) {
-    return state.name;
-  },
 };
 
 // actions (do CRUD function)
 const actions = {
-  async list({ state, commit, rootState }, params) {
-    return await crud.List(
-      import.meta.env.VITE_API_SERVER +
-        "/" +
-        state.model.name +
-        "?" +
-        new URLSearchParams({
-          search: params.search,
-          perPage: params.perPage,
-          page: params.page,
-        }).toString()
-    );
+  setToken(context, payload) {
+    localStorage.setItem("token", payload); // save token
+    context.commit("UPDATE_TOKEN", payload);
   },
-  async read({ state, commit, rootState }, params) {
-    return await crud.Read(
-      import.meta.env.VITE_API_SERVER +
-        "/" +
-        state.model.name +
-        "/" +
-        params.id +
-        "/read"
-    );
-  },
-  async create({ state, commit, rootState }, params) {
-    return await crud.Create(
-      import.meta.env.VITE_API_SERVER + "/" + state.model.name + "/create",
-      params
-    );
-  },
-  async update({ state, commit, rootState }, params) {
-    return await crud.Update(
-      import.meta.env.VITE_API_SERVER + "/" + state.model.name + "/update",
-      params
-    );
-  },
-  async delete({ state, commit, rootState }, params) {
-    return await crud.Delete(
-      import.meta.env.VITE_API_SERVER +
-        "/" +
-        state.model.name +
-        "/" +
-        params.id +
-        "/delete"
-    );
-  },
-  async updateName({ state, commit, rootState }, params) {
-    return await (state.name + " ++ Updated name by action");
+  removeToken(context) {
+    localStorage.removeItem("token");
+    context.commit("UPDATE_TOKEN", 0);
   },
 };
 
 // mutations (set Value to state)
 const mutations = {
-  setRecords(state, records) {
-    state.records = records + " + Updated records by commit";
-  },
-  setRecord(state, record) {
-    state.record = record + " + Updated record by commit";
-  },
-  setName(state, name) {
-    state.name = name + " + Updated name by commit";
+  UPDATE_TOKEN(state, payload) {
+    state.token = payload;
   },
 };
 
 export default {
-  namespace: true,
+  // namespace: true,
+  namespaced: true,
   state, //Property
   getters, //Read value from state
   actions, //Do crud functions with from server

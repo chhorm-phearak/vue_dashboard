@@ -72,6 +72,8 @@ import {
   Menu as MenuIcon,
 } from "@vicons/ionicons5";
 
+import { useStore } from "vuex";
+
 import { useRoute } from "vue-router";
 
 import { NIcon, NButton } from "naive-ui";
@@ -91,6 +93,7 @@ function renderIcon(icon) {
 export default defineComponent({
   setup() {
     const route = useRoute();
+    const store = useStore();
 
     // Keep activeKey updated when route changes
     watch(
@@ -138,6 +141,11 @@ export default defineComponent({
       },
     ];
 
+    function logout() {
+      store.dispatch("removeToken");
+      route.push({ name: "Login" });
+    }
+
     return {
       collapsed,
       isMobile,
@@ -147,6 +155,7 @@ export default defineComponent({
       SearchIcon,
       MenuIcon,
       options,
+      logout,
     };
   },
 });

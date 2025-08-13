@@ -6,7 +6,7 @@ import user from "./modules/user";
 
 export default createStore({
   state: {
-    company: "CHHROM PHEARAK",
+    company: "TESING...",
   },
   modules: {
     user,
