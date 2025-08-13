@@ -34,10 +34,7 @@ const mutations = {
 };
 
 export default {
-<<<<<<< HEAD
   // namespace: true,
-=======
->>>>>>> 8523377378694722ccdf26ad19487d80b2e13227
   namespaced: true,
   state, //Property
   getters, //Read value from state
