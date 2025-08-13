@@ -63,8 +63,8 @@ export default defineComponent({
           align: "center",
         },
         {
-          title: "Name",
-          key: "name",
+          title: "Title",
+          key: "title",
           align: "center",
         },
         {
@@ -181,35 +181,35 @@ export default defineComponent({
         {
          key: 1,
           id: 1,
-          name: "Position 1",
+          title: "Position 1",
           description: "Description for Position 1",
           division: "Division A", 
         },
         {
           key: 2,
           id: 2,
-          name: "Position 2",
+          title: "Position 2",
           description: "Description for Position 2",
           division: "Division B",
         },
         {
           key: 3,
           id: 3,
-          name: "Position 3",
+          title: "Position 3",
           description: "Description for Position 3",
           division: "Division C",
         },
         {
           key: 4,
           id: 4,
-          name: "Position 4",
+          title: "Position 4",
           description: "Description for Position 4",
           division: "Division D",
         },
         {
           key: 5,
           id: 5,
-          name: "Position 5",
+          title: "Position 5",
           description: "Description for Position 5",
           division: "Division E",
         }

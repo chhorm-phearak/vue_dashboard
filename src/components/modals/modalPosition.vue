@@ -12,18 +12,16 @@
         Create Staff
       </div> -->
       <div class="grid gap-4 mb-2 md:grid-cols-1 w-full">
-        <n-form-item path="name" label="Name">
+        <n-form-item path="title" label="Title">
           <n-input v-model:value="model.name" @keydown.enter.prevent />
         </n-form-item>
         <n-form-item path="description" label="Description">
           <n-input v-model:value="model.description" @keydown.enter.prevent />
         </n-form-item>
       </div>
-      <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
+      <div class="grid gap-4 mb-2 md:grid-cols-1 w-full">
         <n-form-item path="division" label="Division">
           <n-select v-model:value="model.division" placeholder="Select" :options="divisionOptions" />
-
-
         </n-form-item>
       </div>
       <div class="flex justify-end pt-3 pb-1">
@@ -67,7 +65,7 @@ export default defineComponent({
 
     const formRef = ref(null);
     const modelRef = ref({
-      name: null,
+      title: null,
       description: null,
       division: null,
     });
@@ -94,7 +92,7 @@ onMounted(async () => {
 
 
     const rules = {
-      name: [
+      title: [
         {
           required: true,
           trigger: ["blur", "input"],
@@ -108,41 +106,11 @@ onMounted(async () => {
           message: "Please input Division Description",
         },
       ],
-      age: [
-        {
-          required: true,
-          validator(rule, value) {
-            if (!value) {
-              return new Error("Age is required");
-            } else if (!/^\d*$/.test(value)) {
-              return new Error("Age should be an integer");
-            } else if (Number(value) < 18) {
-              return new Error("Age should be above 18");
-            }
-            return true;
-          },
-          trigger: ["input", "blur"],
-        },
-      ],
-      gender: [
+      division: [
         {
           required: true,
           trigger: ["blur", "change"],
-          message: "Please select Gender",
-        },
-      ],
-      email: [
-        {
-          required: true,
-          trigger: ["blur", "input"],
-          message: "Please input Email",
-        },
-      ],
-      phone: [
-        {
-          required: true,
-          trigger: ["blur", "input"],
-          message: "Please input Phone Number",
+          message: "Please select Division",
         },
       ],
     };

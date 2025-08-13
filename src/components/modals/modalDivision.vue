@@ -20,7 +20,7 @@
       <!-- <div class="w-full text-start font-bold text-lg mb-8 mt-5">
         Create Staff
       </div> -->
-      <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
+      <div class="grid gap-4 mb-2 md:grid-cols-1 w-full">
         <n-form-item path="name" label="Name">
           <n-input v-model:value="model.name" @keydown.enter.prevent />
         </n-form-item>
