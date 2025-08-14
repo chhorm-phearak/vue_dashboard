@@ -89,9 +89,10 @@
 </template>
 
 <script>
-import { CreateOutline as CreateGuardian } from "@vicons/ionicons5";
+import { CreateOutline as CreateGuardian, Storefront } from "@vicons/ionicons5";
 import { defineComponent, ref, watch } from "vue";
 import { useMessage } from "naive-ui";
+import { useStore } from "vuex";
 
 export default defineComponent({
   props: {
@@ -125,7 +126,7 @@ export default defineComponent({
     });
 
     const genderOptions = {
-      selectGender: ["Male", "Female"].map((v) => ({
+      selectGender: ["male", "female"].map((v) => ({
         label: v,
         value: v,
       })),
@@ -213,10 +214,21 @@ export default defineComponent({
       ],
     };
 
+    const store= useStore();
     function handleValidateButtonClick(e) {
       e.preventDefault();
       formRef.value?.validate((errors) => {
         if (!errors) {
+          store.dispatch('guardian/create', modelRef.value)
+            .then( res => {
+              res.data
+              message.success("Guardian created successfully");
+              handleClose();
+            })
+            .catch((error) => {
+              console.error("Error creating guardian:", error);
+              message.error("Failed to create guardian");
+            });
           message.success("Valid");
         } else {
           console.log(errors);

@@ -30,7 +30,7 @@ const getters = {
 const actions = {
   async list({ state, commit, rootState }, params) {
     return await crud.List(
-      "http://127.0.0.1:8000/api/" +
+      import.meta.env.VITE_API_SERVER + "/" +
         state.model.name + //guardian
         "/list?" +
         new URLSearchParams({
