@@ -21,11 +21,12 @@
       :scroll-x="800"
       :max-height="540"
       :columns="columns"
-      :data="data"
+      :data="pagedData"
+      :pagination="false"
     />
-    <div class="flex justify-end pt-4">
+    <!-- <div class="flex justify-end pt-4">
       <n-pagination v-model:page="page" :page-count="10" />
-    </div>
+    </div> -->
   </div>
   <!-- End Data Table -->
 </template>
@@ -37,11 +38,45 @@ import {
   FreeCancellationTwotone as Delete,
 } from "@vicons/material";
 import { NButton, NPopover, useMessage } from "naive-ui";
-import { defineComponent, h, ref } from "vue";
+import { defineComponent, h, ref, reactive, computed } from "vue";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
-  setup() {
+  props: {
+    records: ref([]),
+  },
+  setup(props) {
+    const router = useRouter();
+
     const message = useMessage();
+
+    console.log(props.records);
+
+    const page = ref(1);
+    const pageSize = "10";
+    const search = ref("");
+
+    const data = reactive([]);
+
+    // Computed filtered + paged
+    const filteredData = computed(() => {
+      const val = search.value.toLowerCase();
+      return props.records.filter(
+        (u) =>
+          u.invoice_type.toLowerCase().includes(val) ||
+          u.due_date.toLowerCase().includes(val) ||
+          u.status.toLowerCase().includes(val)
+      );
+    });
+    const pageCount = computed(() =>
+      Math.ceil(filteredData.value.length / pageSize)
+    );
+    const pagedData = computed(() =>
+      filteredData.value.slice(
+        (page.value - 1) * pageSize,
+        page.value * pageSize
+      )
+    );
 
     function viewRow(row) {
       message.info(`View clicked for ID: ${row.id}`);
@@ -191,129 +226,19 @@ export default defineComponent({
       ];
     }
 
-    function createData() {
-      return [
-        {
-          key: 1,
-          id: 1,
-          student_id: "10",
-          invoice_type: "Other",
-          description: "Male",
-          amount: "500",
-          due_date: "8/14/2025",
-          status: "Unpaid",
-        },
-        {
-          key: 1,
-          id: 1,
-          student_id: "10",
-          invoice_type: "Other",
-          description: "Male",
-          amount: "500",
-          due_date: "8/14/2025",
-          status: "Unpaid",
-        },
-        {
-          key: 2,
-          id: 2,
-          student_id: "10",
-          invoice_type: "Other",
-          description: "Male",
-          amount: "500",
-          due_date: "8/14/2025",
-          status: "Unpaid",
-        },
-        {
-          key: 3,
-          id: 3,
-          student_id: "10",
-          invoice_type: "Other",
-          description: "Male",
-          amount: "500",
-          due_date: "8/14/2025",
-          status: "Unpaid",
-        },
-        {
-          key: 4,
-          id: 4,
-          student_id: "10",
-          invoice_type: "Other",
-          description: "Male",
-          amount: "500",
-          due_date: "8/14/2025",
-          status: "Unpaid",
-        },
-        {
-          key: 5,
-          id: 5,
-          student_id: "10",
-          invoice_type: "Other",
-          description: "Male",
-          amount: "500",
-          due_date: "8/14/2025",
-          status: "Unpaid",
-        },
-        {
-          key: 6,
-          id: 6,
-          student_id: "10",
-          invoice_type: "Other",
-          description: "Male",
-          amount: "500",
-          due_date: "8/14/2025",
-          status: "Unpaid",
-        },
-        {
-          key: 7,
-          id: 7,
-          student_id: "10",
-          invoice_type: "Other",
-          description: "Male",
-          amount: "500",
-          due_date: "8/14/2025",
-          status: "Unpaid",
-        },
-        {
-          key: 8,
-          id: 8,
-          student_id: "10",
-          invoice_type: "Other",
-          description: "Male",
-          amount: "500",
-          due_date: "8/14/2025",
-          status: "Unpaid",
-        },
-        {
-          key: 9,
-          id: 9,
-          student_id: "10",
-          invoice_type: "Other",
-          description: "Male",
-          amount: "500",
-          due_date: "8/14/2025",
-          status: "Unpaid",
-        },
-        {
-          key: 10,
-          id: 10,
-          student_id: "10",
-          invoice_type: "Other",
-          description: "Male",
-          amount: "500",
-          due_date: "8/14/2025",
-          status: "Unpaid",
-        },
-      ];
-    }
-
     return {
       SearchIcon,
-      data: createData(),
+      page,
+      pageSize,
+      pageCount,
+      search,
+      data,
+      pagedData,
       columns: createColumns(),
       viewRow,
       editRow,
       deleteRow,
-      page: ref(2),
+      //page: ref(2),
     };
   },
 });

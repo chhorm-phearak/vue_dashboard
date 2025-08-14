@@ -15,12 +15,6 @@ const state = {
 
 // getters (read Value from from state)
 const getters = {
-  // getRecords(state, getters, rootState) {
-  //   return state.records;
-  // },
-  // getRecord(state, getters, rootState) {
-  //   return state.record;
-  // },
   setRecords(state, getters, rootState) {
     return state.records;
   },

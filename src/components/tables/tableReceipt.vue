@@ -21,11 +21,12 @@
       :scroll-x="800"
       :max-height="540"
       :columns="columns"
-      :data="data"
+      :data="pagedData"
+      :pagination="false"
     />
-    <div class="flex justify-end pt-4">
+    <!-- <div class="flex justify-end pt-4">
       <n-pagination v-model:page="page" :page-count="10" />
-    </div>
+    </div> -->
   </div>
   <!-- End Data Table -->
 </template>
@@ -37,11 +38,44 @@ import {
   FreeCancellationTwotone as Delete,
 } from "@vicons/material";
 import { NButton, NPopover, useMessage } from "naive-ui";
-import { defineComponent, h, ref } from "vue";
+import { defineComponent, h, ref, reactive, computed } from "vue";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
-  setup() {
+  props: {
+    records: ref([]),
+  },
+  setup(props) {
+    const router = useRouter();
     const message = useMessage();
+
+    console.log(props.records);
+
+    const page = ref(1);
+    const pageSize = "10";
+    const search = ref("");
+
+    const data = reactive([]);
+
+    // Computed filtered + paged
+    const filteredData = computed(() => {
+      const val = search.value.toLowerCase();
+      return props.records.filter(
+        (u) =>
+          u.student_first_name.toLowerCase().includes(val) ||
+          u.student_last_name.toLowerCase().includes(val) ||
+          u.status.toLowerCase().includes(val)
+      );
+    });
+    const pageCount = computed(() =>
+      Math.ceil(filteredData.value.length / pageSize)
+    );
+    const pagedData = computed(() =>
+      filteredData.value.slice(
+        (page.value - 1) * pageSize,
+        page.value * pageSize
+      )
+    );
 
     function viewRow(row) {
       message.info(`View clicked for ID: ${row.id}`);
@@ -211,154 +245,14 @@ export default defineComponent({
       ];
     }
 
-    function createData() {
-      return [
-        {
-          key: 1,
-          id: 1,
-          invoice_id: "007",
-          student_first_name: "Student",
-          student_last_name: "Two",
-          payment_date: "8/14/2025",
-          amount_paid: "600",
-          payment_method: "credit_card",
-          transaction_id: "01010109",
-          paid_by: "guardian",
-          issued_by: "staff",
-          status: "pending",
-        },
-        {
-          key: 2,
-          id: 2,
-          invoice_id: "007",
-          student_first_name: "Student",
-          student_last_name: "Two",
-          payment_date: "8/14/2025",
-          amount_paid: "600",
-          payment_method: "credit_card",
-          transaction_id: "01010109",
-          paid_by: "guardian",
-          issued_by: "staff",
-          status: "pending",
-        },
-        {
-          key: 3,
-          id: 3,
-          invoice_id: "007",
-          student_first_name: "Student",
-          student_last_name: "Two",
-          payment_date: "8/14/2025",
-          amount_paid: "600",
-          payment_method: "credit_card",
-          transaction_id: "01010109",
-          paid_by: "guardian",
-          issued_by: "staff",
-          status: "pending",
-        },
-        {
-          key: 4,
-          id: 4,
-          invoice_id: "007",
-          student_first_name: "Student",
-          student_last_name: "Two",
-          payment_date: "8/14/2025",
-          amount_paid: "600",
-          payment_method: "credit_card",
-          transaction_id: "01010109",
-          paid_by: "guardian",
-          issued_by: "staff",
-          status: "pending",
-        },
-        {
-          key: 5,
-          id: 5,
-          invoice_id: "007",
-          student_first_name: "Student",
-          student_last_name: "Two",
-          payment_date: "8/14/2025",
-          amount_paid: "600",
-          payment_method: "credit_card",
-          transaction_id: "01010109",
-          paid_by: "guardian",
-          issued_by: "staff",
-          status: "pending",
-        },
-        {
-          key: 6,
-          id: 6,
-          invoice_id: "007",
-          student_first_name: "Student",
-          student_last_name: "Two",
-          payment_date: "8/14/2025",
-          amount_paid: "600",
-          payment_method: "credit_card",
-          transaction_id: "01010109",
-          paid_by: "guardian",
-          issued_by: "staff",
-          status: "pending",
-        },
-        {
-          key: 7,
-          id: 7,
-          invoice_id: "007",
-          student_first_name: "Student",
-          student_last_name: "Two",
-          payment_date: "8/14/2025",
-          amount_paid: "600",
-          payment_method: "credit_card",
-          transaction_id: "01010109",
-          paid_by: "guardian",
-          issued_by: "staff",
-          status: "pending",
-        },
-        {
-          key: 8,
-          id: 8,
-          invoice_id: "007",
-          student_first_name: "Student",
-          student_last_name: "Two",
-          payment_date: "8/14/2025",
-          amount_paid: "600",
-          payment_method: "credit_card",
-          transaction_id: "01010109",
-          paid_by: "guardian",
-          issued_by: "staff",
-          status: "pending",
-        },
-        {
-          key: 9,
-          id: 9,
-          invoice_id: "007",
-          student_first_name: "Student",
-          student_last_name: "Two",
-          payment_date: "8/14/2025",
-          amount_paid: "600",
-          payment_method: "credit_card",
-          transaction_id: "01010109",
-          paid_by: "guardian",
-          issued_by: "staff",
-          status: "pending",
-        },
-        {
-          key: 10,
-          id: 10,
-          invoice_id: "007",
-          student_first_name: "Student",
-          student_last_name: "Two",
-          payment_date: "8/14/2025",
-          amount_paid: "600",
-          payment_method: "credit_card",
-          transaction_id: "01010109",
-          paid_by: "guardian",
-          issued_by: "staff",
-          status: "pending",
-        },
-      ];
-    }
-
     return {
       SearchIcon,
-      data: createData(),
+      page,
+      pageSize,
+      pageCount,
+      search,
+      data,
+      pagedData,
       columns: createColumns(),
       viewRow,
       editRow,

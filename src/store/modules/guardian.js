@@ -3,8 +3,8 @@ import crud from "../../api/crud";
 // state (Property is an name of Attribute)
 const state = {
   model: {
-    name: "stu",
-    title: "I am admin",
+    name: "guardian",
+    title: "I am guardian",
   },
   // records: [],
   // record: null,
@@ -31,7 +31,7 @@ const actions = {
   async list({ state, commit, rootState }, params) {
     return await crud.List(
       "http://127.0.0.1:8000/api/" +
-        state.model.name + //stu
+        state.model.name + //guardian
         "/list?" +
         new URLSearchParams({
           search: params.search,

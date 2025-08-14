@@ -21,11 +21,12 @@
       :scroll-x="800"
       :max-height="540"
       :columns="columns"
-      :data="data"
+      :data="pagedData"
+      :pagination="false"
     />
-    <div class="flex justify-end pt-4">
+    <!-- <div class="flex justify-end pt-4">
       <n-pagination v-model:page="page" :page-count="10" />
-    </div>
+    </div> -->
   </div>
   <!-- End Data Table -->
 </template>
@@ -37,11 +38,44 @@ import {
   FreeCancellationTwotone as Delete,
 } from "@vicons/material";
 import { NButton, NPopover, useMessage } from "naive-ui";
-import { defineComponent, h, ref } from "vue";
+import { defineComponent, h, ref, reactive, computed } from "vue";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
-  setup() {
+  props: {
+    records: ref([]),
+  },
+  setup(props) {
+    const router = useRouter();
     const message = useMessage();
+
+    console.log(props.records);
+
+    const page = ref(1);
+    const pageSize = "10";
+    const search = ref("");
+
+    const data = reactive([]);
+
+    // Computed filtered + paged
+    const filteredData = computed(() => {
+      const val = search.value.toLowerCase();
+      return props.records.filter(
+        (u) =>
+          u.first_name.toLowerCase().includes(val) ||
+          u.last_name.toLowerCase().includes(val) ||
+          u.gender.toLowerCase().includes(val)
+      );
+    });
+    const pageCount = computed(() =>
+      Math.ceil(filteredData.value.length / pageSize)
+    );
+    const pagedData = computed(() =>
+      filteredData.value.slice(
+        (page.value - 1) * pageSize,
+        page.value * pageSize
+      )
+    );
 
     function viewRow(row) {
       message.info(`View clicked for ID: ${row.id}`);
@@ -228,189 +262,19 @@ export default defineComponent({
       ];
     }
 
-    function createData() {
-      return [
-        {
-          key: 1,
-          id: 1,
-          first_name: "Student",
-          last_name: "One",
-          gender: "Male",
-          age: 8,
-          date_of_birth: "8/14/2025",
-          admission_date: "8/14/2025",
-          class_name: "A1",
-          bus_name: "B1",
-          special_note: "Note",
-          photo_url: "URL-Photo",
-          guardian_first_name: "Guardian",
-          guardian_last_name: "Guardian",
-          pickup_authorized_persons: "pickup",
-        },
-        {
-          key: 2,
-          id: 2,
-          first_name: "Student",
-          last_name: "One",
-          gender: "Male",
-          age: 8,
-          date_of_birth: "8/14/2025",
-          admission_date: "8/14/2025",
-          class_name: "A1",
-          bus_name: "B1",
-          special_note: "Note",
-          photo_url: "URL-Photo",
-          guardian_first_name: "Guardian",
-          guardian_last_name: "Guardian",
-          pickup_authorized_persons: "pickup",
-        },
-        {
-          key: 3,
-          id: 3,
-          first_name: "Student",
-          last_name: "One",
-          gender: "Male",
-          age: 8,
-          date_of_birth: "8/14/2025",
-          admission_date: "8/14/2025",
-          class_name: "A1",
-          bus_name: "B1",
-          special_note: "Note",
-          photo_url: "URL-Photo",
-          guardian_first_name: "Guardian",
-          guardian_last_name: "Guardian",
-          pickup_authorized_persons: "pickup",
-        },
-        {
-          key: 4,
-          id: 4,
-          first_name: "Student",
-          last_name: "One",
-          gender: "Male",
-          age: 8,
-          date_of_birth: "8/14/2025",
-          admission_date: "8/14/2025",
-          class_name: "A1",
-          bus_name: "B1",
-          special_note: "Note",
-          photo_url: "URL-Photo",
-          guardian_first_name: "Guardian",
-          guardian_last_name: "Guardian",
-          pickup_authorized_persons: "pickup",
-        },
-        {
-          key: 5,
-          id: 5,
-          first_name: "Student",
-          last_name: "One",
-          gender: "Male",
-          age: 8,
-          date_of_birth: "8/14/2025",
-          admission_date: "8/14/2025",
-          class_name: "A1",
-          bus_name: "B1",
-          special_note: "Note",
-          photo_url: "URL-Photo",
-          guardian_first_name: "Guardian",
-          guardian_last_name: "Guardian",
-          pickup_authorized_persons: "pickup",
-        },
-        {
-          key: 6,
-          id: 6,
-          first_name: "Student",
-          last_name: "One",
-          gender: "Male",
-          age: 8,
-          date_of_birth: "8/14/2025",
-          admission_date: "8/14/2025",
-          class_name: "A1",
-          bus_name: "B1",
-          special_note: "Note",
-          photo_url: "URL-Photo",
-          guardian_first_name: "Guardian",
-          guardian_last_name: "Guardian",
-          pickup_authorized_persons: "pickup",
-        },
-        {
-          key: 7,
-          id: 7,
-          first_name: "Student",
-          last_name: "One",
-          gender: "Male",
-          age: 8,
-          date_of_birth: "8/14/2025",
-          admission_date: "8/14/2025",
-          class_name: "A1",
-          bus_name: "B1",
-          special_note: "Note",
-          photo_url: "URL-Photo",
-          guardian_first_name: "Guardian",
-          guardian_last_name: "Guardian",
-          pickup_authorized_persons: "pickup",
-        },
-        {
-          key: 8,
-          id: 8,
-          first_name: "Student",
-          last_name: "One",
-          gender: "Male",
-          age: 8,
-          date_of_birth: "8/14/2025",
-          admission_date: "8/14/2025",
-          class_name: "A1",
-          bus_name: "B1",
-          special_note: "Note",
-          photo_url: "URL-Photo",
-          guardian_first_name: "Guardian",
-          guardian_last_name: "Guardian",
-          pickup_authorized_persons: "pickup",
-        },
-        {
-          key: 9,
-          id: 9,
-          first_name: "Student",
-          last_name: "One",
-          gender: "Male",
-          age: 8,
-          date_of_birth: "8/14/2025",
-          admission_date: "8/14/2025",
-          class_name: "A1",
-          bus_name: "B1",
-          special_note: "Note",
-          photo_url: "URL-Photo",
-          guardian_first_name: "Guardian",
-          guardian_last_name: "Guardian",
-          pickup_authorized_persons: "pickup",
-        },
-        {
-          key: 10,
-          id: 10,
-          first_name: "Student",
-          last_name: "One",
-          gender: "Male",
-          age: 8,
-          date_of_birth: "8/14/2025",
-          admission_date: "8/14/2025",
-          class_name: "A1",
-          bus_name: "B1",
-          special_note: "Note",
-          photo_url: "URL-Photo",
-          guardian_first_name: "Guardian",
-          guardian_last_name: "Guardian",
-          pickup_authorized_persons: "pickup",
-        },
-      ];
-    }
-
     return {
       SearchIcon,
-      data: createData(),
+      page,
+      pageSize,
+      pageCount,
+      search,
+      data,
+      pagedData,
       columns: createColumns(),
       viewRow,
       editRow,
       deleteRow,
-      page: ref(2),
+      //page: ref(2),
     };
   },
 });
