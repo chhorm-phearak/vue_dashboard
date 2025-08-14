@@ -162,7 +162,7 @@ export default defineComponent({
 
     const submitLogin = async () => {
       await axios
-        .post(import.meta.env.VITE_API_SERVER + "/api/login", formLogin)
+        .post(import.meta.env.VITE_API_SERVER + "/login", formLogin)
         .then((res) => {
           if (res.data.success) {
             setToken(res.data.token); //token: [access_token: {}, type_token: {}]

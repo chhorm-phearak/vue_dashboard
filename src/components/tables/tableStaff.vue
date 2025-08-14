@@ -1,6 +1,7 @@
 <template>
   <div
-    class="relative overflow-hidden h-[716px] shadow-md border border-gray-200 rounded-lg p-4 bg-white">
+    class="relative overflow-hidden h-[716px] shadow-md border border-gray-200 rounded-lg p-4 bg-white"
+  >
     <!-- Search -->
     <div class="flex justify-end">
       <div class="w-60 md:w-80 pb-4">
@@ -8,7 +9,8 @@
           v-model:value="search"
           size="Medium"
           placeholder="Search by first or last name"
-          clearable>
+          clearable
+        >
           <template #prefix>
             <n-icon :component="SearchIcon" />
           </template>
@@ -26,7 +28,8 @@
       :max-height="540"
       :columns="columns"
       :data="pagedData"
-      :pagination="false" />
+      :pagination="false"
+    />
 
     <!-- Pagination --
     <div class="flex justify-end pt-4">
@@ -42,14 +45,16 @@
       title="Edit User"
       :closable="false"
       :mask-closable="false"
-      :preset="'card'">
+      :preset="'card'"
+    >
       <n-form
         ref="editFormRef"
         :model="editForm"
         :rules="rules"
         label-placement="left"
         label-width="100px"
-        size="medium">
+        size="medium"
+      >
         <n-form-item label="First Name" path="first_name">
           <n-input v-model:value="editForm.first_name" />
         </n-form-item>
@@ -117,11 +122,11 @@ export default defineComponent({
     NButton,
     NPopover,
   },
-  props:{
+  props: {
     records: ref([]),
   },
   setup(props) {
-    console.log( props.records )
+    console.log(props.records);
 
     const message = useMessage();
     const page = ref(1);
@@ -216,12 +221,12 @@ export default defineComponent({
     // Computed filtered + paged
     const filteredData = computed(() => {
       const val = search.value.toLowerCase();
-        return props.records.filter(
-          (u) =>
-            u.first_name.toLowerCase().includes(val) ||
-            u.last_name.toLowerCase().includes(val) ||
-            u.email.toLowerCase().includes(val)
-        );
+      return props.records.filter(
+        (u) =>
+          u.first_name.toLowerCase().includes(val) ||
+          u.last_name.toLowerCase().includes(val) ||
+          u.email.toLowerCase().includes(val)
+      );
     });
 
     const pageCount = computed(() =>
@@ -295,7 +300,11 @@ export default defineComponent({
         },
       ],
       phone_number: [
-        { required: true, message: "phone_number is required", trigger: "blur" },
+        {
+          required: true,
+          message: "phone_number is required",
+          trigger: "blur",
+        },
       ],
     };
 
