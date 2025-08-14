@@ -221,7 +221,6 @@ export default defineComponent({
         if (!errors) {
           store.dispatch('guardian/create', modelRef.value)
             .then( res => {
-              res.data
               message.success("Guardian created successfully");
               handleClose();
             })
