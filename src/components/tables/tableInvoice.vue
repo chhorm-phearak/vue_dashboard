@@ -21,11 +21,12 @@
       :scroll-x="800"
       :max-height="540"
       :columns="columns"
-      :data="data"
+      :data="pagedData"
+      :pagination="false"
     />
-    <div class="flex justify-end pt-4">
+    <!-- <div class="flex justify-end pt-4">
       <n-pagination v-model:page="page" :page-count="10" />
-    </div>
+    </div> -->
   </div>
   <!-- End Data Table -->
 </template>
@@ -37,11 +38,45 @@ import {
   FreeCancellationTwotone as Delete,
 } from "@vicons/material";
 import { NButton, NPopover, useMessage } from "naive-ui";
-import { defineComponent, h, ref } from "vue";
+import { defineComponent, h, ref, reactive, computed } from "vue";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
-  setup() {
+  props: {
+    records: ref([]),
+  },
+  setup(props) {
+    const router = useRouter();
+
     const message = useMessage();
+
+    console.log(props.records);
+
+    const page = ref(1);
+    const pageSize = "10";
+    const search = ref("");
+
+    const data = reactive([]);
+
+    // Computed filtered + paged
+    const filteredData = computed(() => {
+      const val = search.value.toLowerCase();
+      return props.records.filter(
+        (u) =>
+          u.invoice_type.toLowerCase().includes(val) ||
+          u.due_date.toLowerCase().includes(val) ||
+          u.status.toLowerCase().includes(val)
+      );
+    });
+    const pageCount = computed(() =>
+      Math.ceil(filteredData.value.length / pageSize)
+    );
+    const pagedData = computed(() =>
+      filteredData.value.slice(
+        (page.value - 1) * pageSize,
+        page.value * pageSize
+      )
+    );
 
     function viewRow(row) {
       message.info(`View clicked for ID: ${row.id}`);
@@ -63,39 +98,40 @@ export default defineComponent({
           align: "center",
         },
         {
-          title: "First Name",
-          key: "first_name",
+          title: "Student ID",
+          key: "student_id",
           align: "center",
         },
         {
-          title: "Last Name",
-          key: "last_name",
+          title: "Invoice Type",
+          key: "invoice_type",
           align: "center",
         },
         {
-          title: "Gender",
-          key: "gender",
+          title: "Description",
+          key: "description",
           align: "center",
         },
         {
-          title: "Age",
-          key: "age",
+          title: "Amount",
+          key: "amount",
           align: "center",
         },
         {
-          title: "Email",
-          key: "email",
+          title: "Due Date",
+          key: "due_date",
           align: "center",
         },
         {
-          title: "Mobile",
-          key: "phone",
+          title: "Status",
+          key: "status",
           align: "center",
         },
         {
           title: "Action",
           key: "actions",
           align: "center",
+          width: "150",
           render(row) {
             const whenScreen = window.innerWidth <= 1024;
             return h(
@@ -190,129 +226,19 @@ export default defineComponent({
       ];
     }
 
-    function createData() {
-      return [
-        {
-          key: 1,
-          id: 1,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 2,
-          id: 2,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 3,
-          id: 3,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 4,
-          id: 4,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 5,
-          id: 5,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 6,
-          id: 6,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 7,
-          id: 7,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 8,
-          id: 8,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 9,
-          id: 9,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 10,
-          id: 10,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 11,
-          id: 11,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-      ];
-    }
-
     return {
       SearchIcon,
-      data: createData(),
+      page,
+      pageSize,
+      pageCount,
+      search,
+      data,
+      pagedData,
       columns: createColumns(),
       viewRow,
       editRow,
       deleteRow,
-      page: ref(2),
+      //page: ref(2),
     };
   },
 });

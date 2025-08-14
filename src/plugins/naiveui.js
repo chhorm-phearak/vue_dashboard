@@ -33,7 +33,7 @@ import {
   NUpload,
   NUploadDragger,
   NP,
-  NText
+  NText,
 } from "naive-ui";
 
 export const registerNaiveUI = () => {
@@ -72,7 +72,7 @@ export const registerNaiveUI = () => {
       NUpload,
       NUploadDragger,
       NP,
-      NText
+      NText,
     ],
   });
 };

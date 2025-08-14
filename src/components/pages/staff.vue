@@ -21,12 +21,12 @@
 </template>
 
 <script setup>
-import { ref , reactive } from "vue";
+import { ref, reactive } from "vue";
 import { AddCircleSharp as AddNew, Storefront } from "@vicons/ionicons5";
 import MainApp from "@/components/mainApp.vue";
 import ModalStaff from "@/components/modals/modalStaff.vue";
 import TableStaff from "@/components/tables/tableStaff.vue";
-import { useStore } from 'vuex';
+import { useStore } from "vuex";
 
 const showModal = ref(false);
 
@@ -38,22 +38,23 @@ function handleClose() {
 const store = useStore();
 
 const table = reactive({
-  page: 1, 
+  page: 1,
   perPage: 10,
-  search: '',
-  records: []
-})
-
-store.dispatch("staff/list",{
-  page: 1 ,
-  perPage: 10 , 
-  search: ''
-}).then((response) => {
-  if (response.status === 200) {
-    table.records = response.data.data;
-  } else {
-    console.error("Failed to fetch staffs", response);
-  }
+  search: "",
+  records: [],
 });
 
+store
+  .dispatch("staff/list", {
+    page: 1,
+    perPage: 10,
+    search: "",
+  })
+  .then((response) => {
+    if (response.status === 200) {
+      table.records = response.data.data;
+    } else {
+      console.error("Failed to fetch staffs", response);
+    }
+  });
 </script>

@@ -4,7 +4,7 @@
     title="Create Invoice"
     :closable="true"
     v-model:show="showModal"
-    class="!w-[390px] md:!w-[640px] lg:!w-[800px]"
+    class="!w-[390px] md:!w-[440px] lg:!w-[600px]"
     preset="card"
     :style="{
       top: '0%',
@@ -17,35 +17,50 @@
     @close="handleClose"
   >
     <n-form ref="formRef" :model="model" :rules="rules" class="flex flex-col">
-      <!-- <div class="w-full text-start font-bold text-lg mb-8 mt-5">
-        Create Staff
-      </div> -->
-      <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
-        <n-form-item path="first_name" label="First Name">
-          <n-input v-model:value="model.first_name" @keydown.enter.prevent />
-        </n-form-item>
-        <n-form-item path="last_name" label="Last Name">
-          <n-input v-model:value="model.last_name" @keydown.enter.prevent />
+      <div class="grid gap-4 mb-2 md:grid-cols-1 w-full">
+        <n-form-item path="student_id" label="Student ID">
+          <n-input v-model:value="model.student_id" @keydown.enter.prevent />
         </n-form-item>
       </div>
-      <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
-        <n-form-item path="age" label="Age">
-          <n-input v-model:value="model.age" @keydown.enter.prevent />
-        </n-form-item>
-        <n-form-item path="gender" label="Gender">
+      <div class="grid gap-4 mb-2 md:grid-cols-1 w-full">
+        <n-form-item path="invoice_type" label="Invoice Type">
           <n-select
-            v-model:value="model.gender"
+            v-model:value="model.invoice_type"
             placeholder="Select"
-            :options="genderOptions.selectGender"
+            :options="invoiceType.selectType"
           />
         </n-form-item>
       </div>
-      <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
-        <n-form-item path="email" label="Email">
-          <n-input v-model:value="model.email" @keydown.enter.prevent />
+      <div class="grid gap-4 mb-2 md:grid-cols-1 w-full">
+        <n-form-item :span="12" label="Description" path="description">
+          <n-input
+            v-model:value="model.description"
+            placeholder="Description"
+            type="textarea"
+            :autosize="{
+              minRows: 3,
+              maxRows: 5,
+            }"
+          />
         </n-form-item>
-        <n-form-item path="phone" label="Mobile">
-          <n-input v-model:value="model.phone" @keydown.enter.prevent />
+      </div>
+      <div class="grid gap-4 mb-2 md:grid-cols-1 w-full">
+        <n-form-item path="amount" label="Amount">
+          <n-input v-model:value="model.amount" @keydown.enter.prevent />
+        </n-form-item>
+      </div>
+      <div class="grid gap-4 mb-2 md:grid-cols-1 w-full">
+        <n-form-item path="due_date" label="Due Date">
+          <n-input v-model:value="model.due_date" @keydown.enter.prevent />
+        </n-form-item>
+      </div>
+      <div class="grid gap-4 mb-2 md:grid-cols-1 w-full">
+        <n-form-item path="status" label="Status">
+          <n-select
+            v-model:value="model.status"
+            placeholder="Select"
+            :options="statusOptions.selectStatus"
+          />
         </n-form-item>
       </div>
       <div class="flex justify-end pt-3 pb-1">
@@ -90,71 +105,68 @@ export default defineComponent({
 
     const formRef = ref(null);
     const modelRef = ref({
-      first_name: null,
-      last_name: null,
-      gender: null,
-      age: null,
-      email: null,
-      phone: null,
+      student_id: null,
+      invoice_type: null,
+      description: null,
+      amount: null,
+      due_date: null,
+      status: null,
     });
 
-    const genderOptions = {
-      selectGender: ["Male", "Female"].map((v) => ({
+    const invoiceType = {
+      selectType: ["tuition", "library", "transport", "other"].map((v) => ({
+        label: v,
+        value: v,
+      })),
+    };
+    const statusOptions = {
+      selectStatus: ["unpaid", "paid", "partial", "overdue"].map((v) => ({
         label: v,
         value: v,
       })),
     };
 
     const rules = {
-      first_name: [
+      student_id: [
         {
           required: true,
           trigger: ["blur", "input"],
-          message: "Please input First Name",
+          message: "Please input Student ID",
         },
       ],
-      last_name: [
+      invoice_type: [
         {
           required: true,
           trigger: ["blur", "input"],
-          message: "Please input Last Name",
+          message: "Please input Invoice Type",
         },
       ],
-      age: [
-        {
-          required: true,
-          validator(rule, value) {
-            if (!value) {
-              return new Error("Age is required");
-            } else if (!/^\d*$/.test(value)) {
-              return new Error("Age should be an integer");
-            } else if (Number(value) < 18) {
-              return new Error("Age should be above 18");
-            }
-            return true;
-          },
-          trigger: ["input", "blur"],
-        },
-      ],
-      gender: [
-        {
-          required: true,
-          trigger: ["blur", "change"],
-          message: "Please select Gender",
-        },
-      ],
-      email: [
+      description: [
         {
           required: true,
           trigger: ["blur", "input"],
-          message: "Please input Email",
+          message: "Please input Description",
         },
       ],
-      phone: [
+      amount: [
         {
           required: true,
           trigger: ["blur", "input"],
-          message: "Please input Phone Number",
+          message: "Please input Amount",
+        },
+      ],
+      due_date: [
+        {
+          required: true,
+          trigger: ["blur", "input"],
+          message: "Please input Due Date",
+        },
+      ],
+      status: [
+        {
+          required: true,
+          trigger: ["blur", "input"],
+          message: "Please input Status",
         },
       ],
     };
@@ -194,7 +206,8 @@ export default defineComponent({
       formRef,
       model: modelRef,
       rules,
-      genderOptions,
+      invoiceType,
+      statusOptions,
       handleValidateButtonClick,
       CreateStaff,
     };

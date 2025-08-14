@@ -3,7 +3,7 @@ import crud from "../../api/crud";
 // state (Property is an name of Attribute)
 const state = {
   model: {
-    name: "staff",
+    name: "inv",
     title: "I am admin",
   },
   // records: [],
@@ -15,6 +15,12 @@ const state = {
 
 // getters (read Value from from state)
 const getters = {
+  // getRecords(state, getters, rootState) {
+  //   return state.records;
+  // },
+  // getRecord(state, getters, rootState) {
+  //   return state.record;
+  // },
   setRecords(state, getters, rootState) {
     return state.records;
   },
@@ -31,7 +37,7 @@ const actions = {
   async list({ state, commit, rootState }, params) {
     return await crud.List(
       "http://127.0.0.1:8000/api/" +
-        state.model.name + //staff
+        state.model.name + //inv
         "/list?" +
         new URLSearchParams({
           search: params.search,

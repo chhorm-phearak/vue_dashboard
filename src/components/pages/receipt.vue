@@ -16,18 +16,41 @@
       </div>
     </div>
     <ModalReceipt v-model:modelValue="showModal" @close="handleClose" />
-    <TableReceipt />
+    <TableReceipt :records="table.records" />
   </MainApp>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 import { AddCircleSharp as AddNew } from "@vicons/ionicons5";
 import MainApp from "@/components/mainApp.vue";
 import ModalReceipt from "@/components/modals/modalReceipt.vue";
 import TableReceipt from "@/components/tables/tableReceipt.vue";
+import { useStore } from "vuex";
 
 const showModal = ref(false);
+
+const store = useStore();
+const table = reactive({
+  page: 1,
+  perPage: 10,
+  search: "",
+  records: [],
+});
+
+store
+  .dispatch("receipt/list", {
+    page: 1,
+    perPage: 10,
+    search: "",
+  })
+  .then((response) => {
+    if (response.status === 200) {
+      table.records = response.data.data;
+    } else {
+      console.error("Failed to fetch receipt", response);
+    }
+  });
 
 function handleClose() {
   showModal.value = false;

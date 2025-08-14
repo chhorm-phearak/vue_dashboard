@@ -21,11 +21,12 @@
       :scroll-x="800"
       :max-height="540"
       :columns="columns"
-      :data="data"
+      :data="pagedData"
+      :pagination="false"
     />
-    <div class="flex justify-end pt-4">
+    <!-- <div class="flex justify-end pt-4">
       <n-pagination v-model:page="page" :page-count="10" />
-    </div>
+    </div> -->
   </div>
   <!-- End Data Table -->
 </template>
@@ -37,11 +38,44 @@ import {
   FreeCancellationTwotone as Delete,
 } from "@vicons/material";
 import { NButton, NPopover, useMessage } from "naive-ui";
-import { defineComponent, h, ref } from "vue";
+import { defineComponent, h, ref, reactive, computed } from "vue";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
-  setup() {
+  props: {
+    records: ref([]),
+  },
+  setup(props) {
+    const router = useRouter();
     const message = useMessage();
+
+    console.log(props.records);
+
+    const page = ref(1);
+    const pageSize = "10";
+    const search = ref("");
+
+    const data = reactive([]);
+
+    // Computed filtered + paged
+    const filteredData = computed(() => {
+      const val = search.value.toLowerCase();
+      return props.records.filter(
+        (u) =>
+          u.first_name.toLowerCase().includes(val) ||
+          u.last_name.toLowerCase().includes(val) ||
+          u.gender.toLowerCase().includes(val)
+      );
+    });
+    const pageCount = computed(() =>
+      Math.ceil(filteredData.value.length / pageSize)
+    );
+    const pagedData = computed(() =>
+      filteredData.value.slice(
+        (page.value - 1) * pageSize,
+        page.value * pageSize
+      )
+    );
 
     function viewRow(row) {
       message.info(`View clicked for ID: ${row.id}`);
@@ -73,29 +107,67 @@ export default defineComponent({
           align: "center",
         },
         {
-          title: "Gender",
-          key: "gender",
-          align: "center",
-        },
-        {
           title: "Age",
           key: "age",
           align: "center",
         },
         {
-          title: "Email",
-          key: "email",
+          title: "Gender",
+          key: "gender",
+          align: "center",
+        },
+
+        {
+          title: "Date of Birth",
+          key: "date_of_birth",
           align: "center",
         },
         {
-          title: "Mobile",
-          key: "phone",
+          title: "Admission Date",
+          key: "admission_date",
           align: "center",
+        },
+        {
+          title: "Class Name",
+          key: "class_name",
+          align: "center",
+        },
+        {
+          title: "Bus Name",
+          key: "bus_name",
+          align: "center",
+        },
+        {
+          title: "Special Note",
+          key: "special_note",
+          align: "center",
+        },
+        {
+          title: "Photo",
+          key: "photo_url",
+          align: "center",
+        },
+        {
+          title: "Guardian First Name",
+          key: "guardian_first_name",
+          align: "center",
+        },
+        {
+          title: "Guardian Last Name",
+          key: "guardian_last_name",
+          align: "center",
+        },
+        {
+          title: "Pickup Authorized Persons",
+          key: "pickup_authorized_persons",
+          align: "center",
+          width: "150",
         },
         {
           title: "Action",
           key: "actions",
           align: "center",
+          width: "150",
           render(row) {
             const whenScreen = window.innerWidth <= 1024;
             return h(
@@ -190,129 +262,19 @@ export default defineComponent({
       ];
     }
 
-    function createData() {
-      return [
-        {
-          key: 1,
-          id: 1,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 2,
-          id: 2,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 3,
-          id: 3,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 4,
-          id: 4,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 5,
-          id: 5,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 6,
-          id: 6,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 7,
-          id: 7,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 8,
-          id: 8,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 9,
-          id: 9,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 10,
-          id: 10,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-        {
-          key: 11,
-          id: 11,
-          first_name: "Chhorm",
-          last_name: "Phearak",
-          gender: "Male",
-          age: 24,
-          email: "phnompenh@gmail.com",
-          phone: "+855 12 348 034",
-        },
-      ];
-    }
-
     return {
       SearchIcon,
-      data: createData(),
+      page,
+      pageSize,
+      pageCount,
+      search,
+      data,
+      pagedData,
       columns: createColumns(),
       viewRow,
       editRow,
       deleteRow,
-      page: ref(2),
+      //page: ref(2),
     };
   },
 });

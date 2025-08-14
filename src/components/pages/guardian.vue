@@ -16,16 +16,17 @@
       </div>
     </div>
     <ModalGuardian v-model:modelValue="showModal" @close="handleClose" />
-    <TableGuardian />
+    <TableGuardian :records="table.records" />
   </MainApp>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 import { AddCircleSharp as AddNew } from "@vicons/ionicons5";
 import MainApp from "@/components/mainApp.vue";
 import ModalGuardian from "@/components/modals/modalGuardian.vue";
 import TableGuardian from "@/components/tables/tableGuardian.vue";
+import { useStore } from "vuex";
 
 const showModal = ref(false);
 
@@ -33,4 +34,26 @@ function handleClose() {
   showModal.value = false;
   console.log("Modal closed from parent");
 }
+
+const store = useStore();
+const table = reactive({
+  page: 1,
+  perPage: 10,
+  search: "",
+  records: [],
+});
+
+store
+  .dispatch("guardian/list", {
+    page: 1,
+    perPage: 10,
+    search: "",
+  })
+  .then((response) => {
+    if (response.status === 200) {
+      table.records = response.data.data;
+    } else {
+      console.error("Failed to fetch guardians", response);
+    }
+  });
 </script>

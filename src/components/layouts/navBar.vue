@@ -37,7 +37,7 @@
           </n-icon>
         </template>
       </n-button>
-      <n-dropdown :options="options">
+      <n-dropdown :options="options" @select="selectLogOut">
         <n-button
           circle
           shape="square"
@@ -72,9 +72,9 @@ import {
   Menu as MenuIcon,
 } from "@vicons/ionicons5";
 
-import { useStore } from "vuex";
+import { authLogout } from "./../../plugins/authentication";
 
-import { useRoute } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 
 import { NIcon, NButton } from "naive-ui";
 import {
@@ -92,8 +92,8 @@ function renderIcon(icon) {
 
 export default defineComponent({
   setup() {
+    const router = useRouter();
     const route = useRoute();
-    const store = useStore();
 
     // Keep activeKey updated when route changes
     watch(
@@ -141,10 +141,16 @@ export default defineComponent({
       },
     ];
 
-    function logout() {
-      store.dispatch("removeToken");
-      route.push({ name: "Login" });
+    function LogOut() {
+      authLogout(); // clear token from storage
+      router.push({ name: "Login" }); // redirect
     }
+
+    const selectLogOut = (key) => {
+      if (key === "logout") {
+        LogOut();
+      }
+    };
 
     return {
       collapsed,
@@ -155,7 +161,7 @@ export default defineComponent({
       SearchIcon,
       MenuIcon,
       options,
-      logout,
+      selectLogOut,
     };
   },
 });

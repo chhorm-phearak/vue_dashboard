@@ -17,35 +17,61 @@
     @close="handleClose"
   >
     <n-form ref="formRef" :model="model" :rules="rules" class="flex flex-col">
-      <!-- <div class="w-full text-start font-bold text-lg mb-8 mt-5">
-        Create Staff
-      </div> -->
       <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
-        <n-form-item path="first_name" label="First Name">
-          <n-input v-model:value="model.first_name" @keydown.enter.prevent />
+        <n-form-item path="student_first_name" label="First Name">
+          <n-input
+            v-model:value="model.student_first_name"
+            @keydown.enter.prevent
+          />
         </n-form-item>
-        <n-form-item path="last_name" label="Last Name">
-          <n-input v-model:value="model.last_name" @keydown.enter.prevent />
-        </n-form-item>
-      </div>
-      <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
-        <n-form-item path="age" label="Age">
-          <n-input v-model:value="model.age" @keydown.enter.prevent />
-        </n-form-item>
-        <n-form-item path="gender" label="Gender">
-          <n-select
-            v-model:value="model.gender"
-            placeholder="Select"
-            :options="genderOptions.selectGender"
+        <n-form-item path="student_last_name" label="Last Name">
+          <n-input
+            v-model:value="model.student_last_name"
+            @keydown.enter.prevent
           />
         </n-form-item>
       </div>
       <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
-        <n-form-item path="email" label="Email">
-          <n-input v-model:value="model.email" @keydown.enter.prevent />
+        <n-form-item path="invoice_id" label="Invoice ID">
+          <n-input v-model:value="model.invoice_id" @keydown.enter.prevent />
         </n-form-item>
-        <n-form-item path="phone" label="Mobile">
-          <n-input v-model:value="model.phone" @keydown.enter.prevent />
+        <n-form-item path="payment_date" label="Payment Date">
+          <n-input v-model:value="model.payment_date" @keydown.enter.prevent />
+        </n-form-item>
+      </div>
+      <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
+        <n-form-item path="amount_paid" label="Amount Paid">
+          <n-input v-model:value="model.amount_paid" @keydown.enter.prevent />
+        </n-form-item>
+        <n-form-item path="payment_method" label="Gender">
+          <n-select
+            v-model:value="model.payment_method"
+            placeholder="Select"
+            :options="paymentMethod.selectPayment"
+          />
+        </n-form-item>
+      </div>
+      <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
+        <n-form-item path="transaction_id" label="Transaction ID">
+          <n-input
+            v-model:value="model.transaction_id"
+            @keydown.enter.prevent
+          />
+        </n-form-item>
+        <n-form-item path="paid_by" label="Paid By">
+          <n-input v-model:value="model.paid_by" @keydown.enter.prevent />
+        </n-form-item>
+      </div>
+      <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
+        <n-form-item path="issued_by" label="Issued By">
+          <n-input v-model:value="model.issued_by" @keydown.enter.prevent />
+        </n-form-item>
+        <n-form-item path="status" label="Status">
+          <n-select
+            v-model:value="model.status"
+            placeholder="Select"
+            :options="statusOptions.selectStatus"
+          />
         </n-form-item>
       </div>
       <div class="flex justify-end pt-3 pb-1">
@@ -90,71 +116,106 @@ export default defineComponent({
 
     const formRef = ref(null);
     const modelRef = ref({
-      first_name: null,
-      last_name: null,
-      gender: null,
-      age: null,
-      email: null,
-      phone: null,
+      invoice_id: null,
+      student_first_name: null,
+      student_last_name: null,
+      payment_date: null,
+      amount_paid: null,
+      payment_method: null,
+      transaction_id: null,
+      paid_by: null,
+      issued_by: null,
+      status: null,
     });
 
-    const genderOptions = {
-      selectGender: ["Male", "Female"].map((v) => ({
+    const paymentMethod = {
+      selectPayment: [
+        "credit_card",
+        "debit_card",
+        "cash",
+        "bank_transfer",
+        "other",
+      ].map((v) => ({
+        label: v,
+        value: v,
+      })),
+    };
+    const statusOptions = {
+      selectStatus: ["pending", "paid", "cancelled"].map((v) => ({
         label: v,
         value: v,
       })),
     };
 
     const rules = {
-      first_name: [
+      invoice_id: [
+        {
+          required: true,
+          trigger: ["blur", "input"],
+          message: "Please input Invoice ID",
+        },
+      ],
+      student_first_name: [
         {
           required: true,
           trigger: ["blur", "input"],
           message: "Please input First Name",
         },
       ],
-      last_name: [
+      student_last_name: [
         {
           required: true,
           trigger: ["blur", "input"],
           message: "Please input Last Name",
         },
       ],
-      age: [
-        {
-          required: true,
-          validator(rule, value) {
-            if (!value) {
-              return new Error("Age is required");
-            } else if (!/^\d*$/.test(value)) {
-              return new Error("Age should be an integer");
-            } else if (Number(value) < 18) {
-              return new Error("Age should be above 18");
-            }
-            return true;
-          },
-          trigger: ["input", "blur"],
-        },
-      ],
-      gender: [
-        {
-          required: true,
-          trigger: ["blur", "change"],
-          message: "Please select Gender",
-        },
-      ],
-      email: [
+      payment_date: [
         {
           required: true,
           trigger: ["blur", "input"],
-          message: "Please input Email",
+          message: "Please input Payment Date",
         },
       ],
-      phone: [
+      amount_paid: [
         {
           required: true,
           trigger: ["blur", "input"],
-          message: "Please input Phone Number",
+          message: "Please input Amount Paid",
+        },
+      ],
+      payment_method: [
+        {
+          required: true,
+          trigger: ["blur", "input"],
+          message: "Please input Payment Method",
+        },
+      ],
+      transaction_id: [
+        {
+          required: true,
+          trigger: ["blur", "input"],
+          message: "Please input Transaction ID",
+        },
+      ],
+      paid_by: [
+        {
+          required: true,
+          trigger: ["blur", "input"],
+          message: "Please input Paid By",
+        },
+      ],
+      issued_by: [
+        {
+          required: true,
+          trigger: ["blur", "input"],
+          message: "Please input Issued By",
+        },
+      ],
+      status: [
+        {
+          required: true,
+          trigger: ["blur", "input"],
+          message: "Please input Status",
         },
       ],
     };
@@ -194,7 +255,8 @@ export default defineComponent({
       formRef,
       model: modelRef,
       rules,
-      genderOptions,
+      paymentMethod,
+      statusOptions,
       handleValidateButtonClick,
       CreateStaff,
     };

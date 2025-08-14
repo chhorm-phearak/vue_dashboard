@@ -16,18 +16,41 @@
       </div>
     </div>
     <ModalStudent v-model:modelValue="showModal" @close="handleClose" />
-    <TableStudent />
+    <TableStudent :records="table.records" />
   </MainApp>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 import { AddCircleSharp as AddNew } from "@vicons/ionicons5";
 import MainApp from "@/components/mainApp.vue";
 import ModalStudent from "@/components/modals/modalStudent.vue";
 import TableStudent from "@/components/tables/tableStudent.vue";
+import { useStore } from "vuex";
 
 const showModal = ref(false);
+
+const store = useStore();
+const table = reactive({
+  page: 1,
+  perPage: 10,
+  search: "",
+  records: [],
+});
+
+store
+  .dispatch("student/list", {
+    page: 1,
+    perPage: 10,
+    search: "",
+  })
+  .then((response) => {
+    if (response.status === 200) {
+      table.records = response.data.data;
+    } else {
+      console.error("Failed to fetch student", response);
+    }
+  });
 
 function handleClose() {
   showModal.value = false;

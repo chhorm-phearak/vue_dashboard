@@ -16,18 +16,41 @@
       </div>
     </div>
     <ModalInvoice v-model:modelValue="showModal" @close="handleClose" />
-    <TableInvoice />
+    <TableInvoice :records="table.records" />
   </MainApp>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 import { AddCircleSharp as AddNew } from "@vicons/ionicons5";
 import MainApp from "@/components/mainApp.vue";
 import ModalInvoice from "@/components/modals/modalInvoice.vue";
 import TableInvoice from "@/components/tables/tableInvoice.vue";
+import { useStore } from "vuex";
 
 const showModal = ref(false);
+
+const store = useStore();
+const table = reactive({
+  page: 1,
+  perPage: 10,
+  search: "",
+  records: [],
+});
+
+store
+  .dispatch("invoice/list", {
+    page: 1,
+    perPage: 10,
+    search: "",
+  })
+  .then((response) => {
+    if (response.status === 200) {
+      table.records = response.data.data;
+    } else {
+      console.error("Failed to fetch invoice", response);
+    }
+  });
 
 function handleClose() {
   showModal.value = false;
