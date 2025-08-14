@@ -15,17 +15,18 @@
         </n-button>
       </div>
     </div>
-    <ModalDivision v-model:modelValue="showModal" @close="handleClose" />
-    <TableDivision />
+    <ModalDivision v-model:modelValue="showModal" @close="handleClose" @created="fetchDivisions" />
+    <TableDivision :records="table.records" />
   </MainApp>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 import { AddCircleSharp as AddNew } from "@vicons/ionicons5";
 import MainApp from "@/components/mainApp.vue";
 import ModalDivision from "@/components/modals/modalDivision.vue";
 import TableDivision from "@/components/tables/tableDivision.vue";
+import { useStore } from "vuex";
 
 const showModal = ref(false);
 
@@ -33,4 +34,30 @@ function handleClose() {
   showModal.value = false;
   console.log("Modal closed from parent");
 }
+
+const store = useStore();
+
+const table = reactive({
+  page: 1,
+  perPage: 10,
+  search: '',
+  records: []
+});
+
+function fetchDivisions() {
+  store.dispatch("division/list", {
+    page: table.page,
+    perPage: table.perPage,
+    search: table.search
+  }).then((response) => {
+    if (response.status === 200) {
+      table.records = response.data.data;
+    } else {
+      console.error("Failed to fetch divisions", response);
+    }
+  });
+}
+
+// Initial fetch
+fetchDivisions();
 </script>

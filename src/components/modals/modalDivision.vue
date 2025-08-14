@@ -1,5 +1,4 @@
 <template>
-  <!--Modal -->
   <n-modal
     title="Create Division"
     :closable="true"
@@ -17,15 +16,12 @@
     @close="handleClose"
   >
     <n-form ref="formRef" :model="model" :rules="rules" class="flex flex-col">
-      <!-- <div class="w-full text-start font-bold text-lg mb-8 mt-5">
-        Create Staff
-      </div> -->
       <div class="grid gap-4 mb-2 md:grid-cols-1 w-full">
-        <n-form-item path="name" label="Name">
-          <n-input v-model:value="model.name" @keydown.enter.prevent />
+        <n-form-item path="division_name" label="Division Name">
+          <n-input v-model:value="model.division_name" @keydown.enter.prevent />
         </n-form-item>
-        <n-form-item path="description" label="Description">
-          <n-input v-model:value="model.description" @keydown.enter.prevent />
+        <n-form-item path="division_description" label="Description">
+          <n-input v-model:value="model.division_description" @keydown.enter.prevent />
         </n-form-item>
       </div>
       <div class="flex justify-end pt-3 pb-1">
@@ -35,7 +31,7 @@
         >
           <div class="flex gap-2 items-center">
             <n-icon size="22">
-              <component :is="CreateStaff" />
+              <component :is="CreateIcon" />
             </n-icon>
             <span class="font-bold">Create</span>
           </div>
@@ -43,13 +39,13 @@
       </div>
     </n-form>
   </n-modal>
-  <!--End Modal -->
 </template>
 
 <script>
-import { CreateOutline as CreateStaff } from "@vicons/ionicons5";
+import { CreateOutline as CreateIcon } from "@vicons/ionicons5";
 import { defineComponent, ref, watch } from "vue";
 import { useMessage } from "naive-ui";
+import { useStore } from "vuex";
 
 export default defineComponent({
   props: {
@@ -62,28 +58,27 @@ export default defineComponent({
       default: false,
     },
   },
-  emits: ["update:modelValue", "close"],
+  emits: ["update:modelValue", "close", "created"],
   setup(props, { emit }) {
+    const store = useStore();
     const message = useMessage();
-
     const showModal = ref(props.modelValue);
 
     const formRef = ref(null);
-    const modelRef = ref({
-      name: null,
-      description: null,
+    const model = ref({
+      division_name: "",
+      division_description: "",
     });
 
-
     const rules = {
-      name: [
+      division_name: [
         {
           required: true,
           trigger: ["blur", "input"],
           message: "Please input Division Name",
         },
       ],
-      description: [
+      division_description: [
         {
           required: true,
           trigger: ["blur", "input"],
@@ -92,14 +87,22 @@ export default defineComponent({
       ],
     };
 
-    function handleValidateButtonClick(e) {
+    async function handleValidateButtonClick(e) {
       e.preventDefault();
-      formRef.value?.validate((errors) => {
+      formRef.value?.validate(async (errors) => {
         if (!errors) {
-          message.success("Valid");
+          try {
+            await store.dispatch("division/create", model.value);
+            message.success("Division created successfully!");
+            emit("created"); // trigger refresh in parent
+            emit("update:modelValue", false);
+            emit("close");
+          } catch (err) {
+            console.error(err);
+            message.error("Failed to create division");
+          }
         } else {
-          console.log(errors);
-          message.error("Invalid");
+          message.error("Invalid input");
         }
       });
     }
@@ -107,16 +110,11 @@ export default defineComponent({
     function handleClose() {
       emit("update:modelValue", false);
       emit("close");
-      console.log("Close Modal User");
     }
 
-    // Sync prop with internal ref
-    watch(
-      () => props.modelValue,
-      (val) => {
-        showModal.value = val;
-      }
-    );
+    watch(() => props.modelValue, (val) => {
+      showModal.value = val;
+    });
     watch(showModal, (val) => {
       emit("update:modelValue", val);
     });
@@ -125,10 +123,10 @@ export default defineComponent({
       showModal,
       handleClose,
       formRef,
-      model: modelRef,
+      model,
       rules,
       handleValidateButtonClick,
-      CreateStaff,
+      CreateIcon,
     };
   },
 });
