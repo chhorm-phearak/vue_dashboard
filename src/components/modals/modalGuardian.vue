@@ -1,7 +1,7 @@
 <template>
   <!--Modal -->
   <n-modal
-    title="Create Staff"
+    title="Create Guardian"
     :closable="true"
     v-model:show="showModal"
     class="!w-[390px] md:!w-[640px] lg:!w-[800px]"
@@ -32,20 +32,42 @@
         <n-form-item path="age" label="Age">
           <n-input v-model:value="model.age" @keydown.enter.prevent />
         </n-form-item>
-        <n-form-item path="gender" label="Gender">
+        <n-form-item path="guardian_gender" label="Gender">
           <n-select
-            v-model:value="model.gender"
+            v-model:value="model.guardian_gender"
             placeholder="Select"
             :options="genderOptions.selectGender"
           />
         </n-form-item>
       </div>
       <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
+        <n-form-item
+          path="relationship_to_student"
+          label="Relationship Student"
+        >
+          <n-input
+            v-model:value="model.relationship_to_student"
+            @keydown.enter.prevent
+          />
+        </n-form-item>
+        <n-form-item path="occupation" label="Occupation">
+          <n-input v-model:value="model.occupation" @keydown.enter.prevent />
+        </n-form-item>
+      </div>
+      <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
         <n-form-item path="email" label="Email">
           <n-input v-model:value="model.email" @keydown.enter.prevent />
         </n-form-item>
-        <n-form-item path="phone" label="Mobile">
-          <n-input v-model:value="model.phone" @keydown.enter.prevent />
+        <n-form-item path="phone_number" label="Mobile Phone">
+          <n-input v-model:value="model.phone_number" @keydown.enter.prevent />
+        </n-form-item>
+      </div>
+      <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
+        <n-form-item path="address" label="Address">
+          <n-input v-model:value="model.address" @keydown.enter.prevent />
+        </n-form-item>
+        <n-form-item path="photo_url" label="Photo">
+          <n-input v-model:value="model.photo_url" @keydown.enter.prevent />
         </n-form-item>
       </div>
       <div class="flex justify-end pt-3 pb-1">
@@ -55,7 +77,7 @@
         >
           <div class="flex gap-2 items-center">
             <n-icon size="22">
-              <component :is="CreateStaff" />
+              <component :is="CreateGuardian" />
             </n-icon>
             <span class="font-bold">Create</span>
           </div>
@@ -67,7 +89,7 @@
 </template>
 
 <script>
-import { CreateOutline as CreateStaff } from "@vicons/ionicons5";
+import { CreateOutline as CreateGuardian } from "@vicons/ionicons5";
 import { defineComponent, ref, watch } from "vue";
 import { useMessage } from "naive-ui";
 
@@ -92,10 +114,14 @@ export default defineComponent({
     const modelRef = ref({
       first_name: null,
       last_name: null,
-      gender: null,
       age: null,
+      guardian_gender: null,
+      relationship_to_student: null,
+      occupation: null,
       email: null,
-      phone: null,
+      phone_number: null,
+      address: null,
+      photo_url: null,
     });
 
     const genderOptions = {
@@ -136,7 +162,7 @@ export default defineComponent({
           trigger: ["input", "blur"],
         },
       ],
-      gender: [
+      guardian_gender: [
         {
           required: true,
           trigger: ["blur", "change"],
@@ -150,11 +176,39 @@ export default defineComponent({
           message: "Please input Email",
         },
       ],
-      phone: [
+      relationship_to_student: [
+        {
+          required: true,
+          trigger: ["blur", "input"],
+          message: "Please input Relationship with Student",
+        },
+      ],
+      occupation: [
+        {
+          required: true,
+          trigger: ["blur", "input"],
+          message: "Please input Occupation",
+        },
+      ],
+      phone_number: [
         {
           required: true,
           trigger: ["blur", "input"],
           message: "Please input Phone Number",
+        },
+      ],
+      address: [
+        {
+          required: true,
+          trigger: ["blur", "input"],
+          message: "Please input Address",
+        },
+      ],
+      photo_url: [
+        {
+          required: true,
+          trigger: ["blur", "input"],
+          message: "Please input Photo",
         },
       ],
     };
@@ -196,7 +250,7 @@ export default defineComponent({
       rules,
       genderOptions,
       handleValidateButtonClick,
-      CreateStaff,
+      CreateGuardian,
     };
   },
 });

@@ -36,7 +36,7 @@ const getters = {
 const actions = {
   async list({ state, commit, rootState }, params) {
     return await crud.List(
-      'http://127.0.0.1:8000/api/' +
+      "http://127.0.0.1:8000/api/" +
         state.model.name + //staff
         "/list?" +
         new URLSearchParams({

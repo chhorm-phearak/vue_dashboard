@@ -2,36 +2,16 @@ import crud from "../../api/crud";
 import { setToken } from "../../plugins/authentication";
 
 // state (Property is an name of Attribute)
-const state = {
-  token: localStorage.getItem("token") || 0,
-};
+const state = {};
 
 // getters (read Value from from state)
-const getters = {
-  getToken: (state) => state.token,
-  // getToken: function (state) {
-  //   return state.token;
-  // },
-};
+const getters = {};
 
 // actions (do CRUD function)
-const actions = {
-  setToken(context, payload) {
-    localStorage.setItem("token", payload); // save token
-    context.commit("UPDATE_TOKEN", payload);
-  },
-  removeToken(context) {
-    localStorage.removeItem("token");
-    context.commit("UPDATE_TOKEN", 0);
-  },
-};
+const actions = {};
 
 // mutations (set Value to state)
-const mutations = {
-  UPDATE_TOKEN(state, payload) {
-    state.token = payload;
-  },
-};
+const mutations = {};
 
 export default {
   namespaced: true,
