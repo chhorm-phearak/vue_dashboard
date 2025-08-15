@@ -106,7 +106,7 @@ export default defineComponent({
     },
     editData: { type: Object, default: null },
   },
-  emits: ["update:modelValue", "close"],
+  emits: ["update:modelValue", "close", "refresh"],
   setup(props, { emit }) {
     const message = useMessage();
 
@@ -156,7 +156,7 @@ export default defineComponent({
               return new Error("Age is required");
             } else if (!/^\d*$/.test(value)) {
               return new Error("Age should be an integer");
-            } else if (Number(value) < 18) {
+            } else if (Number(value) < 5) {
               return new Error("Age should be above 18");
             }
             return true;
@@ -263,6 +263,7 @@ export default defineComponent({
         if (val) {
           modelRef.value = {
             ...val,
+            id: val.id, // keep id for update
             age: val.age?.toString() ?? "", //convert to string
           };
         }

@@ -90,7 +90,7 @@ export default defineComponent({
       message.info(`You selected on ID : ${row.id}`);
     }
 
-    function deleteRow(row) {
+    function deleteGuardian(row) {
       message.info(`Delete clicked for ID: ${row.id}`);
     }
 
@@ -231,7 +231,7 @@ export default defineComponent({
                         {
                           size: "small",
                           circle: true,
-                          onClick: () => deleteRow(row),
+                          onClick: () => deleteGuardian(row),
                           style: {
                             width: "35px",
                             height: "35px",
@@ -262,7 +262,7 @@ export default defineComponent({
       columns: createColumns(),
       viewGuardian,
       editGuardian,
-      deleteRow,
+      deleteGuardian,
     };
   },
 });
