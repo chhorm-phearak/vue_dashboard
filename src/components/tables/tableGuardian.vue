@@ -45,8 +45,11 @@ export default defineComponent({
   props: {
     records: ref([]),
   },
-  setup(props) {
-    console.log(props.records);
+
+  emits: ["edit", "view"],
+
+  setup(props, { emit }) {
+    //console.log(props.records);
 
     const page = ref(1);
     const pageSize = "10";
@@ -55,21 +58,7 @@ export default defineComponent({
     const router = useRouter();
     const message = useMessage();
 
-    const data = reactive([
-      // {
-      //   id: 1,
-      //   first_name: "Guardian",
-      //   last_name: "One",
-      //   age: "26",
-      //   guardian_gender: "Female",
-      //   relationship_to_student: "Mother",
-      //   occupation: "Work",
-      //   email: "guardian@gmail.com",
-      //   phone_number: "+855 101 010",
-      //   address: "Phnom Penh",
-      //   photo_url: "Guardian Photo",
-      // },
-    ]);
+    const data = reactive([]);
 
     // Computed filtered + paged
     const filteredData = computed(() => {
@@ -91,12 +80,14 @@ export default defineComponent({
       )
     );
 
-    function viewRow(row) {
-      message.info(`View clicked for ID: ${row.id}`);
+    function viewGuardian(row) {
+      emit("view", row);
+      message.info(`You view on ID : ${row.id}`);
     }
 
-    function editRow(row) {
-      message.info(`Edit clicked for ID: ${row.id}`);
+    function editGuardian(row) {
+      emit("edit", row);
+      message.info(`You selected on ID : ${row.id}`);
     }
 
     function deleteRow(row) {
@@ -190,7 +181,7 @@ export default defineComponent({
                         {
                           size: "small",
                           circle: true,
-                          onClick: () => viewRow(row),
+                          onClick: () => viewGuardian(row),
                           style: {
                             width: "35px",
                             height: "35px",
@@ -215,7 +206,7 @@ export default defineComponent({
                         {
                           size: "small",
                           circle: true,
-                          onClick: () => editRow(row),
+                          onClick: () => editGuardian(row),
                           style: {
                             width: "35px",
                             height: "35px",
@@ -269,8 +260,8 @@ export default defineComponent({
       data,
       pagedData,
       columns: createColumns(),
-      viewRow,
-      editRow,
+      viewGuardian,
+      editGuardian,
       deleteRow,
     };
   },

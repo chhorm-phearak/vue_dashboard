@@ -20,7 +20,18 @@
       @refresh="loadDataGuardians"
       @close="handleClose"
     />
-    <TableGuardian :records="table.records" />
+    <EditGuardian
+      v-model:modelValue="modalEdit"
+      :edit-data="editData"
+      @refresh="loadDataGuardians"
+      @close="closeModalEdit"
+    />
+    <ViewGuardian
+      v-model:modelValue="modalView"
+      :edit-data="modalViewData"
+      @close="closeModalView"
+    />
+    <TableGuardian :records="table.records" @view="openView" @edit="openEdit" />
   </MainApp>
 </template>
 
@@ -29,6 +40,8 @@ import { reactive, ref, onMounted } from "vue";
 import { AddCircleSharp as AddNew } from "@vicons/ionicons5";
 import MainApp from "@/components/mainApp.vue";
 import ModalGuardian from "@/components/modals/modalGuardian.vue";
+import EditGuardian from "@/components/modalEdits/editGuardian.vue";
+import ViewGuardian from "@/components/modalViews/viewGuardian.vue";
 import TableGuardian from "@/components/tables/tableGuardian.vue";
 import { useStore } from "vuex";
 export default {
@@ -36,13 +49,39 @@ export default {
     MainApp,
     TableGuardian,
     ModalGuardian,
+    EditGuardian,
+    ViewGuardian,
   },
   setup() {
-    const showModal = ref(false);
+    const showModal = ref(false); // for form create
+
+    const modalEdit = ref(false); // for form edit/update
+    const editData = ref(null);
+
+    const modalView = ref(false); // for form view
+    const modalViewData = ref({}); // store data for View Guardian
+
+    function openView(row) {
+      modalViewData.value = { ...row }; // send data to modal form view
+      modalView.value = true;
+    }
+
+    function openEdit(row) {
+      editData.value = { ...row }; // copy data form row to  modal form edit
+      modalEdit.value = true;
+    }
 
     function handleClose() {
       showModal.value = false;
-      console.log("Modal closed from parent");
+      console.log("Modal Create closed from parent");
+    }
+    function closeModalEdit() {
+      modalEdit.value = false;
+      console.log("Modal Edit closed from parent");
+    }
+    function closeModalView() {
+      modalView.value = false;
+      console.log("Modal View closed from parent");
     }
 
     const store = useStore();
@@ -77,9 +116,17 @@ export default {
     return {
       AddNew,
       showModal,
+      modalEdit,
+      editData,
+      modalView,
+      openEdit,
+      openView,
+      modalViewData,
       table,
       loadDataGuardians,
       handleClose,
+      closeModalEdit,
+      closeModalView,
     };
   },
 };

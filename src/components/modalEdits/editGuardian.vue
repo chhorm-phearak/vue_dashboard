@@ -3,7 +3,7 @@
   <n-modal
     title="Create Guardian"
     :closable="true"
-    v-model:show="showModal"
+    v-model:show="showModalEdit"
     class="!w-[390px] md:!w-[640px] lg:!w-[800px]"
     preset="card"
     :style="{
@@ -14,7 +14,7 @@
     }"
     :bordered="false"
     :segmented="segmented"
-    @close="handleClose"
+    @close="closeModalEdit"
   >
     <n-form ref="formRef" :model="model" :rules="rules" class="flex flex-col">
       <!-- <div class="w-full text-start font-bold text-lg mb-8 mt-5">
@@ -73,13 +73,13 @@
       <div class="flex justify-end pt-3 pb-1">
         <n-button
           class="!p-[10px] !bg-blue-500 hover:!bg-[#18A058] !text-white !rounded-md"
-          @click="handleValidateButtonClick"
+          @click="submitUpdateGuardian"
         >
           <div class="flex gap-2 items-center">
             <n-icon size="22">
               <component :is="CreateGuardian" />
             </n-icon>
-            <span class="font-bold">Create</span>
+            <span class="font-bold">Update</span>
           </div>
         </n-button>
       </div>
@@ -89,7 +89,7 @@
 </template>
 
 <script>
-import { CreateOutline as CreateGuardian, Storefront } from "@vicons/ionicons5";
+import { CreateOutline as CreateGuardian } from "@vicons/ionicons5";
 import { defineComponent, ref, watch } from "vue";
 import { useMessage } from "naive-ui";
 import { useStore } from "vuex";
@@ -104,12 +104,13 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    editData: { type: Object, default: null },
   },
   emits: ["update:modelValue", "close"],
   setup(props, { emit }) {
     const message = useMessage();
 
-    const showModal = ref(props.modelValue);
+    const showModalEdit = ref(props.modelValue);
 
     const formRef = ref(null);
     const modelRef = ref({
@@ -124,23 +125,6 @@ export default defineComponent({
       address: null,
       photo_url: null,
     });
-
-    //reset field when close modal
-    function resetForm() {
-      modelRef.value = {
-        first_name: null,
-        last_name: null,
-        age: null,
-        guardian_gender: null,
-        relationship_to_student: null,
-        occupation: null,
-        email: null,
-        phone_number: null,
-        address: null,
-        photo_url: null,
-      };
-      formRef.value?.restoreValidation();
-    }
 
     const genderOptions = {
       selectGender: ["male", "female"].map((v) => ({
@@ -232,22 +216,21 @@ export default defineComponent({
     };
 
     const store = useStore();
-    function handleValidateButtonClick(e) {
+    function submitUpdateGuardian(e) {
       e.preventDefault();
       formRef.value?.validate((errors) => {
         if (!errors) {
           store
-            .dispatch("guardian/create", modelRef.value)
+            .dispatch("guardian/update", modelRef.value)
             .then((res) => {
-              message.success("Guardian created successfully");
+              message.success("Guardian updated successfully");
               emit("refresh"); // tell parent to reload data
-              resetForm();
-              handleClose();
+              closeModalEdit();
               //emit("update:modelValue", false); // close modal
             })
             .catch((error) => {
               console.error("Error creating guardian:", error);
-              message.error("Failed to create guardian");
+              message.error("Failed to update guardian");
             });
           //message.success("Valid");
         } else {
@@ -257,32 +240,63 @@ export default defineComponent({
       });
     }
 
-    function handleClose() {
+    function closeModalEdit() {
       emit("update:modelValue", false);
       emit("close");
-      console.log("Close Modal User");
+      //console.log("Close Modal User");
     }
 
     // Sync prop with internal ref
     watch(
       () => props.modelValue,
       (val) => {
-        showModal.value = val;
+        showModalEdit.value = val;
       }
     );
-    watch(showModal, (val) => {
+    watch(showModalEdit, (val) => {
       emit("update:modelValue", val);
     });
 
+    watch(
+      () => props.editData,
+      (val) => {
+        if (val) {
+          modelRef.value = {
+            ...val,
+            age: val.age?.toString() ?? "", //convert to string
+          };
+        }
+      }
+    );
+
+    // watch(
+    //   () => props.editData,
+    //   (val) => {
+    //     if (val) {
+    //       modelRef.value = {
+    //         first_name: val.first_name,
+    //         last_name: val.last_name,
+    //         age: Number(val.age), // keep as integer
+    //         guardian_gender: val.guardian_gender,
+    //         relationship_to_student: val.relationship_to_student,
+    //         occupation: val.occupation,
+    //         email: val.email,
+    //         phone_number: val.phone_number,
+    //         address: val.address,
+    //         photo_url: val.photo_url,
+    //       };
+    //     }
+    //   }
+    // );
+
     return {
-      showModal,
-      handleClose,
+      showModalEdit,
+      closeModalEdit,
       formRef,
       model: modelRef,
       rules,
       genderOptions,
-      resetForm,
-      handleValidateButtonClick,
+      submitUpdateGuardian,
       CreateGuardian,
     };
   },
