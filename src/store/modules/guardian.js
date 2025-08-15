@@ -57,14 +57,6 @@ const actions = {
       params
     );
   },
-  // async update({ state, commit, rootState }, params) {
-  //   return await crud.Update(
-  //     `${import.meta.env.VITE_API_SERVER}/${state.model.name}/update/${
-  //       params.id
-  //     }`,
-  //     params
-  //   );
-  // },
   async update({ state, commit, rootState }, params) {
     return await crud.Update(
       import.meta.env.VITE_API_SERVER +
