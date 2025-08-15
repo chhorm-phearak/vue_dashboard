@@ -29,35 +29,40 @@ import TableDivision from "@/components/tables/tableDivision.vue";
 import { useStore } from "vuex";
 
 const showModal = ref(false);
+const store = useStore();
 
 function handleClose() {
   showModal.value = false;
   console.log("Modal closed from parent");
 }
 
-const store = useStore();
 
 const table = reactive({
   page: 1,
   perPage: 10,
-  search: '',
+  search: "",
   records: []
 });
 
+
+
 function fetchDivisions() {
-  store.dispatch("division/list", {
-    page: table.page,
-    perPage: table.perPage,
-    search: table.search
-  }).then((response) => {
-    if (response.status === 200) {
-      table.records = response.data.data;
-    } else {
-      console.error("Failed to fetch divisions", response);
-    }
-  });
+  store
+    .dispatch("division/list", {
+      page: table.page,
+      perPage: table.perPage,
+      search: table.search
+    })
+    .then((response) => {
+      if (response.status === 200) {
+        table.records = response.data.data;
+      } else {
+        console.error("Failed to fetch divisions", response);
+      }
+    });
 }
 
-// Initial fetch
-fetchDivisions();
+
+
+  fetchDivisions();
 </script>
