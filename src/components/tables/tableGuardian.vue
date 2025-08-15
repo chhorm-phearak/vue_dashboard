@@ -46,7 +46,7 @@ export default defineComponent({
     records: ref([]),
   },
 
-  emits: ["edit", "view"],
+  emits: ["edit", "view", "delete"],
 
   setup(props, { emit }) {
     //console.log(props.records);
@@ -91,7 +91,8 @@ export default defineComponent({
     }
 
     function deleteGuardian(row) {
-      message.info(`Delete clicked for ID: ${row.id}`);
+      emit("delete", row);
+      message.info(`You selected on ID : ${row.id}`);
     }
 
     function createColumns() {

@@ -229,7 +229,7 @@ export default defineComponent({
               //emit("update:modelValue", false); // close modal
             })
             .catch((error) => {
-              console.error("Error creating guardian:", error);
+              console.error("Error update guardian:", error);
               message.error("Failed to update guardian");
             });
           //message.success("Valid");

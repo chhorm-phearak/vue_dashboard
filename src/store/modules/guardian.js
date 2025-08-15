@@ -62,9 +62,9 @@ const actions = {
       import.meta.env.VITE_API_SERVER +
         "/" +
         state.model.name +
-        "/update" +
         "/" +
-        params.id,
+        params.id +
+        "/update",
       params
     );
   },
