@@ -43,7 +43,7 @@ export default {
     return await axios({
       method: "PUT",
       url: url,
-      params: params,
+      data: params,
       headers: {
         Authorization: getAuthorization(),
       },

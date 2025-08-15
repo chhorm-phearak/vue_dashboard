@@ -30,7 +30,8 @@ const getters = {
 const actions = {
   async list({ state, commit, rootState }, params) {
     return await crud.List(
-      import.meta.env.VITE_API_SERVER + "/" +
+      import.meta.env.VITE_API_SERVER +
+        "/" +
         state.model.name + //guardian
         "/list?" +
         new URLSearchParams({
