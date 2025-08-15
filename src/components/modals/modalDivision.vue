@@ -1,4 +1,5 @@
 <template>
+    <!--Modal -->
   <n-modal
     title="Create Division"
     :closable="true"
@@ -15,6 +16,7 @@
     :segmented="segmented"
     @close="handleClose"
   >
+  <!-- Create Division -->
     <n-form ref="formRef" :model="model" :rules="rules" class="flex flex-col">
       <div class="grid gap-4 mb-2 md:grid-cols-1 w-full">
         <n-form-item path="division_name" label="Division Name">
@@ -31,7 +33,7 @@
         >
           <div class="flex gap-2 items-center">
             <n-icon size="22">
-              <component :is="CreateIcon" />
+              <component :is="CreateDivision" />
             </n-icon>
             <span class="font-bold">Create</span>
           </div>
@@ -42,7 +44,7 @@
 </template>
 
 <script>
-import { CreateOutline as CreateIcon } from "@vicons/ionicons5";
+import { CreateOutline as CreateDivision, Storefront } from "@vicons/ionicons5";
 import { defineComponent, ref, watch } from "vue";
 import { useMessage } from "naive-ui";
 import { useStore } from "vuex";
@@ -60,12 +62,11 @@ export default defineComponent({
   },
   emits: ["update:modelValue", "close", "created"],
   setup(props, { emit }) {
-    const store = useStore();
     const message = useMessage();
     const showModal = ref(props.modelValue);
 
     const formRef = ref(null);
-    const model = ref({
+    const modelRef = ref({
       division_name: "",
       division_description: "",
     });
@@ -87,34 +88,43 @@ export default defineComponent({
       ],
     };
 
-    async function handleValidateButtonClick(e) {
+    const store= useStore();
+    function handleValidateButtonClick(e) {
       e.preventDefault();
-      formRef.value?.validate(async (errors) => {
+      formRef.value?.validate((errors) => {
         if (!errors) {
-          try {
-            await store.dispatch("division/create", model.value);
-            message.success("Division created successfully!");
-            emit("created"); // trigger refresh in parent
-            emit("update:modelValue", false);
-            emit("close");
-          } catch (err) {
-            console.error(err);
-            message.error("Failed to create division");
-          }
+          store.dispatch('division/create', modelRef.value)
+            .then( res => {
+              message.success("Division is created successfully");
+              emit("created"); // ✅ trigger refresh
+              handleClose();
+            })
+            .catch((error) => {
+              console.error("Error creating Division:", error);
+              message.error("Failed to create Division");
+            });
+          message.success("Valid");
         } else {
-          message.error("Invalid input");
+          console.log(errors);
+          message.error("Invalid");
         }
       });
     }
 
-    function handleClose() {
+      function handleClose() {
       emit("update:modelValue", false);
       emit("close");
+      console.log("Close Modal User");
+      emit("created"); //to refresh the table after creation
     }
-
-    watch(() => props.modelValue, (val) => {
-      showModal.value = val;
-    });
+      
+  // Sync prop with internal ref
+    watch(
+      () => props.modelValue,
+      (val) => {
+        showModal.value = val;
+      }
+    );
     watch(showModal, (val) => {
       emit("update:modelValue", val);
     });
@@ -123,10 +133,10 @@ export default defineComponent({
       showModal,
       handleClose,
       formRef,
-      model,
+      model:modelRef,
       rules,
       handleValidateButtonClick,
-      CreateIcon,
+      CreateDivision,
     };
   },
 });

@@ -1,14 +1,9 @@
 <template>
-  <div
-    class="relative overflow-hidden h-[716px] shadow-md border border-gray-200 rounded-lg p-4 bg-white">
+  <div class="relative overflow-hidden h-[716px] shadow-md border border-gray-200 rounded-lg p-4 bg-white">
     <!-- Search -->
     <div class="flex justify-end">
       <div class="w-60 md:w-80 pb-4">
-        <n-input
-          v-model:value="search"
-          size="Medium"
-          placeholder="Search by division name or description"
-          clearable>
+        <n-input v-model:value="search" size="Medium" placeholder="Search by division name or description" clearable>
           <template #prefix>
             <n-icon :component="SearchIcon" />
           </template>
@@ -17,49 +12,48 @@
     </div>
 
     <!-- Data Table -->
-    <n-data-table
-      class="border border-gray-100 rounded-md"
-      :bordered="false"
-      :single-line="false"
-      :single-column="false"
-      :scroll-x="800"
-      :max-height="540"
-      :columns="columns"
-      :data="pagedData"
+    <n-data-table class="border border-gray-100 rounded-md" :bordered="false" :single-line="false"
+      :single-column="false" :scroll-x="800" :max-height="540" :columns="columns" :data="pagedData"
       :pagination="false" />
 
     <!-- Edit Modal -->
-    <n-modal
-      v-model:show="showEdit"
-      title="Edit Division"
-      :closable="false"
-      :mask-closable="false"
-      :preset="'card'">
-      <n-form
-        ref="editFormRef"
-        :model="editForm"
-        :rules="rules"
-        label-placement="left"
-        label-width="100px"
-        size="medium">
-        <n-form-item label="Division Name" path="division_name">
-          <n-input v-model:value="editForm.division_name" />
-        </n-form-item>
-        <n-form-item label="Division Description" path="division_description">
-          <n-input v-model:value="editForm.division_description" />
-        </n-form-item>
+    <n-modal title="Edit Division" :closable="true" v-model:show="showEdit"
+      class="!w-[390px] md:!w-[640px] lg:!w-[800px]" preset="card" :style="{
+        top: '0%',
+        transform: 'translateY(0%)',
+        transition: 'transform 0.3s ease, opacity 0.3s ease',
+        margin: '0 auto',
+      }" :bordered="false" :segmented="segmented" @close="handleClose">
+      <n-form ref="formRef" :model="model" :rules="rules" class="flex flex-col">
+        <div class="grid gap-4 mb-2 md:grid-cols-1 w-full">
+          <n-form-item label="Division Name" path="division_name">
+            <n-input v-model:value="editForm.division_name" />
+          </n-form-item>
+          <n-form-item label="Division Description" path="division_description">
+            <n-input v-model:value="editForm.division_description" />
+          </n-form-item>
+        </div>
+        <div class="flex justify-end pt-3 pb-1">
+          <n-button class="!p-[10px] !bg-blue-500 hover:!bg-[#18A058] !text-white !rounded-md"
+            @click=" handleValidateButtonClick "
+            >
+            <div class="flex gap-2 items-center">
+              <n-icon size="22" >
+                <component :is="CreateIcon" />
+              </n-icon>
+              <span class="font-bold">Save</span>
+            </div>
+          </n-button>
+        </div>
       </n-form>
-      <template #action>
-        <n-space justify="end">
-          <n-button @click="showEdit = false" tertiary>Cancel</n-button>
-          <n-button @click="submitEditForm" type="primary">Save</n-button>
-        </n-space>
-      </template>
     </n-modal>
   </div>
 </template>
 
+
+
 <script>
+import { CreateOutline as CreateIcon } from "@vicons/ionicons5";
 import { Search as SearchIcon } from "@vicons/ionicons5";
 import {
   RemoveRedEyeFilled as View,
@@ -102,7 +96,7 @@ export default defineComponent({
   setup(props) {
     const message = useMessage();
     const page = ref(1);
-    const pageSize = "10";
+    const pageSize = "15";
     const search = ref("");
     const router = useRouter();
 
@@ -327,15 +321,12 @@ export default defineComponent({
       openEdit,
       openDelete,
       confirmDelete,
+      CreateIcon,
     };
   },
 });
 </script>
 
 <style>
-.icon {
-  width: 20px;
-  height: 20px;
-  color: whitesmoke;
-}
+
 </style>

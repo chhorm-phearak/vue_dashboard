@@ -27,8 +27,10 @@ const getters = {
 // actions (do CRUD function)
 const actions = {
   async list({ state, commit }, params) {
-    return await crud.List(
-      `http://127.0.0.1:8000/api/${state.model.name}/list?` +
+   return await crud.List(
+      import.meta.env.VITE_API_SERVER + "/" +
+        state.model.name + //division
+        "/list?" +
         new URLSearchParams({
           search: params.search,
           perPage: params.perPage,
@@ -36,30 +38,40 @@ const actions = {
         }).toString()
     );
   },
-  async read({ state }, params) {
+  async read({ state, commit, rootState }, params) {
     return await crud.Read(
-      `${import.meta.env.VITE_API_SERVER}/${state.model.name}/${params.id}/read`
+      import.meta.env.VITE_API_SERVER +
+        "/" +
+        state.model.name +
+        "/" +
+        params.id +
+        "/read"
     );
   },
-  async create({ state }, params) {
+  async create({ state, commit, rootState }, params) {
     return await crud.Create(
-      `${import.meta.env.VITE_API_SERVER}/${state.model.name}/create`,
+      import.meta.env.VITE_API_SERVER + "/" + state.model.name + "/store",
       params
     );
   },
-  async update({ state }, params) {
+  async update({ state, commit, rootState }, params) {
     return await crud.Update(
-      `${import.meta.env.VITE_API_SERVER}/${state.model.name}/update`,
+      import.meta.env.VITE_API_SERVER + "/" + state.model.name + "/update",
       params
     );
   },
-  async delete({ state }, params) {
+  async delete({ state, commit, rootState }, params) {
     return await crud.Delete(
-      `${import.meta.env.VITE_API_SERVER}/${state.model.name}/${params.id}/delete`
+      import.meta.env.VITE_API_SERVER +
+        "/" +
+        state.model.name +
+        "/" +
+        params.id +
+        "/delete"
     );
   },
-  async updateName({ state }, params) {
-    return state.name + " ++ Updated name by action";
+  async updateName({ state, commit, rootState }, params) {
+    return await (state.name + " ++ Updated name by action");
   },
 };
 

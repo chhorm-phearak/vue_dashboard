@@ -8,9 +8,6 @@
       margin: '0 auto',
     }" :bordered="false" :segmented="segmented" @close="handleClose">
     <n-form ref="formRef" :model="model" :rules="rules" class="flex flex-col">
-      <!-- <div class="w-full text-start font-bold text-lg mb-8 mt-5">
-        Create Staff
-      </div> -->
       <div class="grid gap-4 mb-2 md:grid-cols-1 w-full">
         <n-form-item path="title" label="Title">
           <n-input v-model:value="model.name" @keydown.enter.prevent />
