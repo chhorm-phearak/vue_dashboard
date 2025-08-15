@@ -214,21 +214,24 @@ export default defineComponent({
       ],
     };
 
-    const store= useStore();
+    const store = useStore();
     function handleValidateButtonClick(e) {
       e.preventDefault();
       formRef.value?.validate((errors) => {
         if (!errors) {
-          store.dispatch('guardian/create', modelRef.value)
-            .then( res => {
+          store
+            .dispatch("guardian/create", modelRef.value)
+            .then((res) => {
               message.success("Guardian created successfully");
+              emit("refresh"); // tell parent to reload data
               handleClose();
+              //emit("update:modelValue", false); // close modal
             })
             .catch((error) => {
               console.error("Error creating guardian:", error);
               message.error("Failed to create guardian");
             });
-          message.success("Valid");
+          //message.success("Valid");
         } else {
           console.log(errors);
           message.error("Invalid");

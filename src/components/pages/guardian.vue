@@ -15,45 +15,86 @@
         </n-button>
       </div>
     </div>
-    <ModalGuardian v-model:modelValue="showModal" @close="handleClose" />
+    <ModalGuardian
+      v-model:modelValue="showModal"
+      @refresh="loadDataGuardians"
+      @close="handleClose"
+    />
     <TableGuardian :records="table.records" />
   </MainApp>
 </template>
 
-<script setup>
-import { reactive, ref } from "vue";
+<script>
+import { reactive, ref, onMounted } from "vue";
 import { AddCircleSharp as AddNew } from "@vicons/ionicons5";
 import MainApp from "@/components/mainApp.vue";
 import ModalGuardian from "@/components/modals/modalGuardian.vue";
 import TableGuardian from "@/components/tables/tableGuardian.vue";
 import { useStore } from "vuex";
+export default {
+  components: {
+    MainApp,
+    TableGuardian,
+    ModalGuardian,
+  },
+  setup() {
+    const showModal = ref(false);
 
-const showModal = ref(false);
-
-function handleClose() {
-  showModal.value = false;
-  console.log("Modal closed from parent");
-}
-
-const store = useStore();
-const table = reactive({
-  page: 1,
-  perPage: 10,
-  search: "",
-  records: [],
-});
-
-store
-  .dispatch("guardian/list", {
-    page: 1,
-    perPage: 10,
-    search: "",
-  })
-  .then((response) => {
-    if (response.status === 200) {
-      table.records = response.data.data;
-    } else {
-      console.error("Failed to fetch guardians", response);
+    function handleClose() {
+      showModal.value = false;
+      console.log("Modal closed from parent");
     }
-  });
+
+    const store = useStore();
+    const table = reactive({
+      page: 1,
+      perPage: 10,
+      search: "",
+      records: [],
+    });
+
+    function loadDataGuardians() {
+      store
+        .dispatch("guardian/list", {
+          page: 1,
+          perPage: 10,
+          search: "",
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            table.records = response.data.data;
+          } else {
+            console.error("Failed to fetch guardians", response);
+          }
+        });
+    }
+
+    // fetch on page load
+    onMounted(() => {
+      loadDataGuardians();
+    });
+
+    return {
+      AddNew,
+      showModal,
+      table,
+      loadDataGuardians,
+      handleClose,
+    };
+  },
+};
+
+// store
+//   .dispatch("guardian/list", {
+//     page: 1,
+//     perPage: 10,
+//     search: "",
+//   })
+//   .then((response) => {
+//     if (response.status === 200) {
+//       table.records = response.data.data;
+//     } else {
+//       console.error("Failed to fetch guardians", response);
+//     }
+//   });
 </script>
