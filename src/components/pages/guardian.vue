@@ -31,7 +31,18 @@
       :edit-data="modalViewData"
       @close="closeModalView"
     />
-    <TableGuardian :records="table.records" @view="openView" @edit="openEdit" />
+    <DeleteGuardian
+      v-model:modelValue="modalDelete"
+      :edit-data="deleteData"
+      @refresh="loadDataGuardians"
+      @close="closeModalDelete"
+    />
+    <TableGuardian
+      :records="table.records"
+      @view="openView"
+      @edit="openEdit"
+      @delete="openDelete"
+    />
   </MainApp>
 </template>
 
@@ -42,6 +53,7 @@ import MainApp from "@/components/mainApp.vue";
 import ModalGuardian from "@/components/modals/modalGuardian.vue";
 import EditGuardian from "@/components/modalEdits/editGuardian.vue";
 import ViewGuardian from "@/components/modalViews/viewGuardian.vue";
+import DeleteGuardian from "@/components/modalDelete/deleteGuardian.vue";
 import TableGuardian from "@/components/tables/tableGuardian.vue";
 import { useStore } from "vuex";
 export default {
@@ -51,6 +63,7 @@ export default {
     ModalGuardian,
     EditGuardian,
     ViewGuardian,
+    DeleteGuardian,
   },
   setup() {
     const showModal = ref(false); // for form create
@@ -61,6 +74,8 @@ export default {
     const modalView = ref(false); // for form view
     const modalViewData = ref({}); // store data for View Guardian
 
+    const modalDelete = ref(false); // for form delete
+
     function openView(row) {
       modalViewData.value = { ...row }; // send data to modal form view
       modalView.value = true;
@@ -69,6 +84,13 @@ export default {
     function openEdit(row) {
       editData.value = { ...row }; // copy data form row to  modal form edit
       modalEdit.value = true;
+    }
+
+    const deleteData = ref({}); // selected delete guardian
+
+    function openDelete(row) {
+      deleteData.value = { ...row }; // must include id
+      modalDelete.value = true;
     }
 
     function handleClose() {
@@ -82,6 +104,10 @@ export default {
     function closeModalView() {
       modalView.value = false;
       console.log("Modal View closed from parent");
+    }
+    function closeModalDelete() {
+      modalDelete.value = false;
+      console.log("Modal Delete closed from parent");
     }
 
     const store = useStore();
@@ -119,7 +145,10 @@ export default {
       modalEdit,
       editData,
       modalView,
+      modalDelete,
+      deleteData,
       openEdit,
+      openDelete,
       openView,
       modalViewData,
       table,
@@ -127,6 +156,7 @@ export default {
       handleClose,
       closeModalEdit,
       closeModalView,
+      closeModalDelete,
     };
   },
 };
