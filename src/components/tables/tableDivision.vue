@@ -105,11 +105,11 @@ export default defineComponent({
           key: "division_name",
           align: "center",
         },
-        {
-          title: "Description",
-          key: "division_description",
-          align: "center",
-        },
+        // {
+        //   title: "Description",
+        //   key: "division_description",
+        //   align: "center",
+        // },
         {
           title: "Action",
           key: "actions",

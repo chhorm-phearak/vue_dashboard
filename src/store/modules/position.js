@@ -3,33 +3,36 @@ import crud from "../../api/crud";
 // state (Property is an name of Attribute)
 const state = {
   model: {
-    name: "division", // ✅ changed from "staff"
-    title: "I am admin",
+    name: "position",
+    title: "I am guardian",
   },
+  // records: [],
+  // record: null,
   records: null,
   record: null,
   name: "Default no name",
 };
 
-// getters (read Value from state)
+// getters (read Value from from state)
 const getters = {
-  getRecords(state) {
+  setRecords(state, getters, rootState) {
     return state.records;
   },
-  getRecord(state) {
+  setRecord(state, getters, rootState) {
     return state.record;
   },
-  getName(state) {
+  getName(state, getters, rootState) {
     return state.name;
   },
 };
 
 // actions (do CRUD function)
 const actions = {
-  async list({ state, commit }, params) {
-   return await crud.List(
-      import.meta.env.VITE_API_SERVER + "/" +
-        state.model.name + //division
+  async list({ state, commit, rootState }, params) {
+    return await crud.List(
+      import.meta.env.VITE_API_SERVER +
+        "/" +
+        state.model.name + //position
         "/list?" +
         new URLSearchParams({
           search: params.search,
@@ -56,10 +59,21 @@ const actions = {
   },
   async update({ state, commit, rootState }, params) {
     return await crud.Update(
-      import.meta.env.VITE_API_SERVER + "/" + state.model.name + "/update",
+      import.meta.env.VITE_API_SERVER +
+        "/" +
+        state.model.name +
+        "/" +
+        params.id +
+        "/update",
       params
     );
   },
+  // async update({ state, commit, rootState }, params) {
+  //   return await crud.Update(
+  //     import.meta.env.VITE_API_SERVER + "/" + state.model.name + "/update",
+  //     params
+  //   );
+  // },
   async delete({ state, commit, rootState }, params) {
     return await crud.Delete(
       import.meta.env.VITE_API_SERVER +
@@ -78,20 +92,20 @@ const actions = {
 // mutations (set Value to state)
 const mutations = {
   setRecords(state, records) {
-    state.records = records; // ✅ removed string concat
+    state.records = records + " + Updated records by commit";
   },
   setRecord(state, record) {
-    state.record = record;
+    state.record = record + " + Updated record by commit";
   },
   setName(state, name) {
-    state.name = name;
+    state.name = name + " + Updated name by commit";
   },
 };
 
 export default {
   namespaced: true,
-  state,
-  getters,
-  actions,
-  mutations,
+  state, //Property
+  getters, //Read value from state
+  actions, //Do crud functions with from server
+  mutations, //Set value to state
 };

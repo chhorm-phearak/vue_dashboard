@@ -17,7 +17,7 @@
     @close="closeModalEdit"
   >
     <n-form ref="formRef" :model="model" :rules="rules" class="flex flex-col">
-      <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
+      <div class="grid gap-4 mb-2 md:grid-cols-1 w-full">
         <n-form-item path="division_name" label="Division Name">
           <n-input v-model:value="model.division_name" @keydown.enter.prevent />
         </n-form-item>
