@@ -1,126 +1,77 @@
 <template>
-  <div class="relative overflow-hidden h-[716px] shadow-md border border-gray-200 rounded-lg p-4 bg-white">
-    <!-- Search -->
+  <!-- Data Table -->
+  <!-- h-[716px] -->
+  <div
+    class="relative overflow-hidden h-[716px] shadow-md border border-gray-200 rounded-lg p-4 bg-white"
+  >
     <div class="flex justify-end">
       <div class="w-60 md:w-80 pb-4">
-        <n-input v-model:value="search" size="Medium" placeholder="Search by division name or description" clearable>
+        <n-input size="Medium" placeholder="Search">
           <template #prefix>
             <n-icon :component="SearchIcon" />
           </template>
         </n-input>
       </div>
     </div>
-
-    <!-- Data Table -->
-    <n-data-table class="border border-gray-100 rounded-md" :bordered="false" :single-line="false"
-      :single-column="false" :scroll-x="800" :max-height="540" :columns="columns" :data="pagedData"
-      :pagination="false" />
-
-    <!-- Edit Modal -->
-    <n-modal title="Edit Division" :closable="true" v-model:show="showEdit"
-      class="!w-[390px] md:!w-[640px] lg:!w-[800px]" preset="card" :style="{
-        top: '0%',
-        transform: 'translateY(0%)',
-        transition: 'transform 0.3s ease, opacity 0.3s ease',
-        margin: '0 auto',
-      }" :bordered="false" :segmented="segmented" @close="handleClose">
-      <n-form ref="formRef" :model="model" :rules="rules" class="flex flex-col">
-        <div class="grid gap-4 mb-2 md:grid-cols-1 w-full">
-          <n-form-item label="Division Name" path="division_name">
-            <n-input v-model:value="editForm.division_name" />
-          </n-form-item>
-          <n-form-item label="Division Description" path="division_description">
-            <n-input v-model:value="editForm.division_description" />
-          </n-form-item>
-        </div>
-        <div class="flex justify-end pt-3 pb-1">
-          <n-button class="!p-[10px] !bg-blue-500 hover:!bg-[#18A058] !text-white !rounded-md"
-            @click=" handleValidateButtonClick "
-            >
-            <div class="flex gap-2 items-center">
-              <n-icon size="22" >
-                <component :is="CreateIcon" />
-              </n-icon>
-              <span class="font-bold">Save</span>
-            </div>
-          </n-button>
-        </div>
-      </n-form>
-    </n-modal>
+    <n-data-table
+      class="border border-gray-100 rounded-md"
+      :bordered="false"
+      :single-line="false"
+      :single-column="false"
+      :scroll-x="800"
+      :max-height="540"
+      :columns="columns"
+      :data="pagedData"
+      :pagination="false"
+    />
+    <!-- <div class="flex justify-end pt-4">
+      <n-pagination v-model:page="page" :page-count="10" />
+    </div> -->
   </div>
+  <!-- End Data Table -->
 </template>
 
-
-
 <script>
-import { CreateOutline as CreateIcon } from "@vicons/ionicons5";
 import { Search as SearchIcon } from "@vicons/ionicons5";
 import {
   RemoveRedEyeFilled as View,
   EditCalendarOutlined as Edit,
   FreeCancellationTwotone as Delete,
 } from "@vicons/material";
-import {
-  NButton,
-  NPopover,
-  useMessage,
-  NInput,
-  NDataTable,
-  NPagination,
-  NModal,
-  NForm,
-  NFormItem,
-  NSpace,
-} from "naive-ui";
-import { defineComponent, h, ref, reactive, computed } from "vue";
+import { NButton, NPopover, useMessage } from "naive-ui";
+import { computed, defineComponent, h, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 
 export default defineComponent({
-  components: {
-    NInput,
-    NDataTable,
-    NPagination,
-    NModal,
-    NForm,
-    NFormItem,
-    NSpace,
-    NButton,
-    NPopover,
-  },
   props: {
-    records: {
-      type: Array,
-      default: () => [],
-    },
+    records: ref([]),
   },
-  setup(props) {
-    const message = useMessage();
+
+  emits: ["edit", "view"],
+
+  setup(props, { emit }) {
     const page = ref(1);
-    const pageSize = "15";
+    const pageSize = "10";
     const search = ref("");
+
     const router = useRouter();
+    const message = useMessage();
 
-    const data = reactive([
-      {
-        id: 1,
-        division_name: "Administration",
-        division_description: "Handles all administrative tasks",
-      },
-    ]);
+    const data = reactive([]);
 
+    // Computed filtered + paged
     const filteredData = computed(() => {
       const val = search.value.toLowerCase();
       return props.records.filter(
         (u) =>
-          u.division_name?.toLowerCase().includes(val) ||
-          u.division_description?.toLowerCase().includes(val)
+          u.division_name.toLowerCase().includes(val) ||
+          u.division_description.toLowerCase().includes(val)
       );
     });
 
     const pageCount = computed(() =>
       Math.ceil(filteredData.value.length / pageSize)
     );
-
     const pagedData = computed(() =>
       filteredData.value.slice(
         (page.value - 1) * pageSize,
@@ -128,43 +79,42 @@ export default defineComponent({
       )
     );
 
-    const currentUser = reactive({
-      id: null,
-      division_name: "",
-      division_description: "",
-    });
+    function viewDivision(row) {
+      emit("view", row);
+      message.info(`You view on ID : ${row.id}`);
+    }
 
-    const showView = ref(false);
-    const showEdit = ref(false);
-    const showDelete = ref(false);
+    function editDivision(row) {
+      emit("edit", row);
+      message.info(`You selected on ID : ${row.id}`);
+    }
 
-    const editForm = reactive({
-      id: null,
-      division_name: "",
-      division_description: "",
-    });
-
-    const rules = {
-      division_name: [
-        { required: true, message: "Division Name is required", trigger: "blur" },
-      ],
-      division_description: [
-        { required: true, message: "Description is required", trigger: "blur" },
-      ],
-    };
-
-    const editFormRef = ref(null);
+    function deleteRow(row) {
+      message.info(`Delete clicked for ID: ${row.id}`);
+    }
 
     function createColumns() {
       return [
-        { title: "ID", key: "id", align: "center" },
-        { title: "Division Name", key: "division_name", align: "center" },
-        { title: "Description", key: "division_description", align: "center" },
         {
-          title: "Actions",
+          title: "ID",
+          key: "id",
+          align: "center",
+        },
+        {
+          title: "Division Name",
+          key: "division_name",
+          align: "center",
+        },
+        {
+          title: "Description",
+          key: "division_description",
+          align: "center",
+        },
+        {
+          title: "Action",
           key: "actions",
           align: "center",
-          width: 140,
+          width: "150",
           render(row) {
             const whenScreen = window.innerWidth <= 1024;
             return h(
@@ -189,7 +139,7 @@ export default defineComponent({
                         {
                           size: "small",
                           circle: true,
-                          onClick: () => openView(row),
+                          onClick: () => viewDivision(row),
                           style: {
                             width: "35px",
                             height: "35px",
@@ -214,7 +164,7 @@ export default defineComponent({
                         {
                           size: "small",
                           circle: true,
-                          onClick: () => openEdit(row),
+                          onClick: () => editDivision(row),
                           style: {
                             width: "35px",
                             height: "35px",
@@ -239,7 +189,7 @@ export default defineComponent({
                         {
                           size: "small",
                           circle: true,
-                          onClick: () => openDelete(row),
+                          onClick: () => deleteRow(row),
                           style: {
                             width: "35px",
                             height: "35px",
@@ -259,47 +209,6 @@ export default defineComponent({
       ];
     }
 
-    function openView(row) {
-      router.push({
-        name: "ViewUser",
-        query: { user: JSON.stringify(row) },
-      });
-    }
-
-    function openEdit(row) {
-      Object.assign(editForm, row);
-      showEdit.value = true;
-    }
-
-    function openDelete(row) {
-      Object.assign(currentUser, row);
-      showDelete.value = true;
-    }
-
-    function submitEditForm() {
-      editFormRef.value.validate((errors) => {
-        if (!errors) {
-          const idx = data.findIndex((u) => u.id === editForm.id);
-          if (idx !== -1) {
-            Object.assign(data[idx], editForm);
-            message.success("Division updated!");
-            showEdit.value = false;
-          }
-        } else {
-          message.error("Please fix errors!");
-        }
-      });
-    }
-
-    function confirmDelete() {
-      const idx = data.findIndex((u) => u.id === currentUser.id);
-      if (idx !== -1) {
-        data.splice(idx, 1);
-        message.success("Division deleted!");
-        showDelete.value = false;
-      }
-    }
-
     return {
       SearchIcon,
       page,
@@ -309,24 +218,18 @@ export default defineComponent({
       data,
       pagedData,
       columns: createColumns(),
-      showView,
-      currentUser,
-      showEdit,
-      editForm,
-      rules,
-      editFormRef,
-      submitEditForm,
-      showDelete,
-      openView,
-      openEdit,
-      openDelete,
-      confirmDelete,
-      CreateIcon,
+      viewDivision,
+      editDivision,
+      deleteRow,
     };
   },
 });
 </script>
 
 <style>
-
+.icon {
+  width: 20px;
+  height: 20px;
+  color: whitesmoke;
+}
 </style>

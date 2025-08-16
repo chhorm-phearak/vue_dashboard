@@ -1,9 +1,9 @@
 <template>
   <!--Modal -->
   <n-modal
-    title="Create Division"
+    title="Edit Division"
     :closable="true"
-    v-model:show="showModal"
+    v-model:show="showModalEdit"
     class="!w-[390px] md:!w-[640px] lg:!w-[800px]"
     preset="card"
     :style="{
@@ -14,7 +14,7 @@
     }"
     :bordered="false"
     :segmented="segmented"
-    @close="handleClose"
+    @close="closeModalEdit"
   >
     <n-form ref="formRef" :model="model" :rules="rules" class="flex flex-col">
       <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
@@ -31,13 +31,13 @@
       <div class="flex justify-end pt-3 pb-1">
         <n-button
           class="!p-[10px] !bg-blue-500 hover:!bg-[#18A058] !text-white !rounded-md"
-          @click="handleValidateButtonClick"
+          @click="submitUpdateDivision"
         >
           <div class="flex gap-2 items-center">
             <n-icon size="22">
               <component :is="CreateDivision" />
             </n-icon>
-            <span class="font-bold">Create</span>
+            <span class="font-bold">Update</span>
           </div>
         </n-button>
       </div>
@@ -62,26 +62,18 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    editData: { type: Object, default: null },
   },
   emits: ["update:modelValue", "close"],
   setup(props, { emit }) {
     const message = useMessage();
-    const showModal = ref(props.modelValue);
-
+    const showModalEdit = ref(props.modelValue);
     const formRef = ref(null);
+
     const modelRef = ref({
       division_name: null,
       division_description: null,
     });
-
-    //reset field when close modal
-    function resetForm() {
-      modelRef.value = {
-        division_name: null,
-        division_description: null,
-      };
-      formRef.value?.restoreValidation();
-    }
 
     const rules = {
       division_name: [
@@ -101,21 +93,20 @@ export default defineComponent({
     };
 
     const store = useStore();
-    function handleValidateButtonClick(e) {
+    function submitUpdateDivision(e) {
       e.preventDefault();
       formRef.value?.validate((errors) => {
         if (!errors) {
           store
-            .dispatch("division/create", modelRef.value)
+            .dispatch("division/update", modelRef.value)
             .then((res) => {
-              message.success("Division created successfully");
+              message.success("Division updated successfully");
               emit("refresh"); // tell parent to reload data
-              resetForm();
-              handleClose();
+              closeModalEdit();
             })
             .catch((error) => {
-              console.error("Error creating division:", error);
-              message.error("Failed to create division");
+              console.error("Error updating division:", error);
+              message.error("Failed to update division");
             });
         } else {
           console.log(errors);
@@ -124,31 +115,40 @@ export default defineComponent({
       });
     }
 
-    function handleClose() {
+    function closeModalEdit() {
       emit("update:modelValue", false);
       emit("close");
-      console.log("Close Modal User");
     }
 
     // Sync prop with internal ref
     watch(
       () => props.modelValue,
       (val) => {
-        showModal.value = val;
+        showModalEdit.value = val;
       }
     );
-    watch(showModal, (val) => {
+    watch(showModalEdit, (val) => {
       emit("update:modelValue", val);
     });
 
+    watch(
+      () => props.editData,
+      (val) => {
+        if (val) {
+          modelRef.value = {
+            ...val,
+          };
+        }
+      }
+    );
+
     return {
-      showModal,
-      handleClose,
+      showModalEdit,
+      closeModalEdit,
       formRef,
       model: modelRef,
       rules,
-      resetForm,
-      handleValidateButtonClick,
+      submitUpdateDivision,
       CreateDivision,
     };
   },

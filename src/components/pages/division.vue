@@ -15,54 +15,120 @@
         </n-button>
       </div>
     </div>
-    <ModalDivision v-model:modelValue="showModal" @close="handleClose" @created="fetchDivisions" />
-    <TableDivision :records="table.records" />
+    <ModalDivision
+      v-model:modelValue="showModal"
+      @refresh="loadDataDivisions"
+      @close="handleClose"
+    />
+    <EditDivision
+      v-model:modelValue="modalEdit"
+      :edit-data="editData"
+      @refresh="loadDataDivisions"
+      @close="closeModalEdit"
+    />
+    <ViewDivision
+      v-model:modelValue="modalView"
+      :edit-data="modalViewData"
+      @close="closeModalView"
+    />
+    <TableDivision :records="table.records" @view="openView" @edit="openEdit" />
   </MainApp>
 </template>
 
-<script setup>
-import { ref, reactive } from "vue";
+<script>
+import { reactive, ref, onMounted } from "vue";
 import { AddCircleSharp as AddNew } from "@vicons/ionicons5";
 import MainApp from "@/components/mainApp.vue";
 import ModalDivision from "@/components/modals/modalDivision.vue";
+import EditDivision from "@/components/modalEdits/editDivision.vue";
+import ViewDivision from "@/components/modalViews/viewDivision.vue";
 import TableDivision from "@/components/tables/tableDivision.vue";
 import { useStore } from "vuex";
 
-const showModal = ref(false);
-const store = useStore();
+export default {
+  components: {
+    MainApp,
+    TableDivision,
+    ModalDivision,
+    EditDivision,
+    ViewDivision,
+  },
+  setup() {
+    const showModal = ref(false); // for form create
 
-function handleClose() {
-  showModal.value = false;
-  console.log("Modal closed from parent");
-}
+    const modalEdit = ref(false); // for form edit/update
+    const editData = ref(null);
 
+    const modalView = ref(false); // for form view
+    const modalViewData = ref({}); // store data for View Division
 
-const table = reactive({
-  page: 1,
-  perPage: 10,
-  search: "",
-  records: []
-});
+    function openView(row) {
+      modalViewData.value = { ...row }; // send data to modal form view
+      modalView.value = true;
+    }
 
+    function openEdit(row) {
+      editData.value = { ...row }; // copy data form row to  modal form edit
+      modalEdit.value = true;
+    }
 
+    function handleClose() {
+      showModal.value = false;
+      console.log("Modal Create closed from parent");
+    }
+    function closeModalEdit() {
+      modalEdit.value = false;
+      console.log("Modal Edit closed from parent");
+    }
+    function closeModalView() {
+      modalView.value = false;
+      console.log("Modal View closed from parent");
+    }
 
-function fetchDivisions() {
-  store
-    .dispatch("division/list", {
-      page: table.page,
-      perPage: table.perPage,
-      search: table.search
-    })
-    .then((response) => {
-      if (response.status === 200) {
-        table.records = response.data.data;
-      } else {
-        console.error("Failed to fetch divisions", response);
-      }
+    const store = useStore();
+    const table = reactive({
+      page: 1,
+      perPage: 10,
+      search: "",
+      records: [],
     });
-}
 
+    function loadDataDivisions() {
+      store
+        .dispatch("division/list", {
+          page: 1,
+          perPage: 10,
+          search: "",
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            table.records = response.data.data;
+          } else {
+            console.error("Failed to fetch divisions", response);
+          }
+        });
+    }
 
+    // fetch on page load
+    onMounted(() => {
+      loadDataDivisions();
+    });
 
-  fetchDivisions();
+    return {
+      AddNew,
+      showModal,
+      modalEdit,
+      editData,
+      modalView,
+      openEdit,
+      openView,
+      modalViewData,
+      table,
+      loadDataDivisions,
+      handleClose,
+      closeModalEdit,
+      closeModalView,
+    };
+  },
+};
 </script>
