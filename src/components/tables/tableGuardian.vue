@@ -46,7 +46,7 @@ export default defineComponent({
     records: ref([]),
   },
 
-  emits: ["edit", "view", "delete"],
+  emits: ["edit", "view"],
 
   setup(props, { emit }) {
     //console.log(props.records);
@@ -90,9 +90,9 @@ export default defineComponent({
       message.info(`You selected on ID : ${row.id}`);
     }
 
-    function deleteGuardian(row) {
+    function deleteRow(row) {
       emit("delete", row);
-      message.info(`You selected on ID : ${row.id}`);
+      message.info(`Delete clicked for ID: ${row.id}`);
     }
 
     function createColumns() {
@@ -232,7 +232,7 @@ export default defineComponent({
                         {
                           size: "small",
                           circle: true,
-                          onClick: () => deleteGuardian(row),
+                          onClick: () => deleteRow(row),
                           style: {
                             width: "35px",
                             height: "35px",
@@ -263,7 +263,7 @@ export default defineComponent({
       columns: createColumns(),
       viewGuardian,
       editGuardian,
-      deleteGuardian,
+      deleteRow,
     };
   },
 });

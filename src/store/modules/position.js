@@ -4,7 +4,7 @@ import crud from "../../api/crud";
 const state = {
   model: {
     name: "position",
-    title: "I am guardian",
+    title: "I am position",
   },
   // records: [],
   // record: null,

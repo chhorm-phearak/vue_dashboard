@@ -1,12 +1,20 @@
 <template>
-  <!--Modal -->
-  <n-modal title="View Information" :closable="false" v-model:show="showModalView"
-    class="!w-[390px] md:!w-[640px] lg:!w-[800px]" preset="card" :style="{
+  <!-- Modal -->
+  <n-modal
+    title="View Information"
+    :closable="false"
+    v-model:show="showModalView"
+    class="!w-[390px] md:!w-[640px] lg:!w-[800px]"
+    preset="card"
+    :style="{
       top: '0%',
       transform: 'translateY(0%)',
       transition: 'transform 0.3s ease, opacity 0.3s ease',
       margin: '0 auto',
-    }" :bordered="false" :segmented="segmented">
+    }"
+    :bordered="false"
+    :segmented="segmented"
+  >
     <n-form ref="formRef" :model="model" class="flex flex-col">
       <div class="grid gap-4 mb-2 md:grid-cols-1 w-full">
         <div class="grid gap-4 md:grid-cols-1 w-full">
@@ -16,7 +24,7 @@
           </div>
           <div class="flex gap-3">
             <label class="font-semibold">Description:</label>
-            <div>{{ model.position_Description }}</div>
+            <div>{{ model.position_description }}</div>
           </div>
           <div class="flex gap-3">
             <label class="font-semibold">Division:</label>
@@ -27,47 +35,79 @@
             </div>
           </div>
         </div>
-</div>
+      </div>
 
-          <div class="flex justify-end pt-3 pb-1">
-            <n-button class="!p-[10px] !bg-blue-500 hover:!bg-[#18A058] !text-white !rounded-md"
-              @click="closeModalView">
-              <div class="flex gap-1 items-center">
-                <n-icon size="22">
-                  <component :is="CloseIcon" />
-                </n-icon>
-                <span class="font-bold">Close</span>
-              </div>
-            </n-button>
+      <div class="flex justify-end pt-3 pb-1">
+        <n-button
+          class="!p-[10px] !bg-blue-500 hover:!bg-[#18A058] !text-white !rounded-md"
+          @click="closeModalView"
+        >
+          <div class="flex gap-1 items-center">
+            <n-icon size="22">
+              <component :is="CloseIcon" />
+            </n-icon>
+            <span class="font-bold">Close</span>
           </div>
+        </n-button>
+      </div>
     </n-form>
   </n-modal>
-  <!--End Modal -->
+  <!-- End Modal -->
 </template>
 
 <script>
-import { defineComponent, ref, watch } from "vue";
+import { defineComponent, ref, watch, onMounted, computed } from "vue";
 import { CloseCircle as CloseIcon } from "@vicons/ionicons5";
+import { useStore } from "vuex";
 
 export default defineComponent({
   props: {
     modelValue: { type: Boolean, required: true },
     segmented: { type: Boolean, default: false },
-    editData: { type: Object, default: () => ({}) }, // pass selected guardian
+    editData: { type: Object, default: () => ({}) },
   },
   emits: ["update:modelValue", "close"],
   setup(props, { emit }) {
+    const store = useStore();
     const showModalView = ref(props.modelValue);
     const model = ref({ ...props.editData });
+    const divisions = ref([]);
 
-    // This watch for modal visibility
+    const divisionOptions = computed(() =>
+      divisions.value.map((d) => ({
+        label: d.division_name,
+        value: d.id,
+      }))
+    );
+
+    function loadDataDivisions() {
+      store
+        .dispatch("division/list", {
+          page: 1,
+          perPage: 10,
+          search: "",
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            divisions.value = response.data.data;
+          } else {
+            console.error("Failed to fetch divisions", response);
+          }
+        });
+    }
+
+    function closeModalView() {
+      emit("update:modelValue", false);
+      emit("close");
+    }
+
     watch(
       () => props.modelValue,
       (val) => (showModalView.value = val)
     );
+
     watch(showModalView, (val) => emit("update:modelValue", val));
 
-    // This watch for New Data from parent
     watch(
       () => props.editData,
       (val) => {
@@ -75,19 +115,17 @@ export default defineComponent({
       }
     );
 
-    function closeModalView() {
-      emit("update:modelValue", false);
-      emit("close");
-    }
+    onMounted(() => {
+      loadDataDivisions();
+    });
 
-  const divisionOptions = {
-            selectDivision: divisions.map((d) => ({
-                label: d.division_name,
-                value: d.id,
-            })),
-        };
-
-    return { CloseIcon, showModalView, model, closeModalView, divisionOptions };
+    return {
+      CloseIcon,
+      showModalView,
+      model,
+      closeModalView,
+      divisionOptions,
+    };
   },
 });
 </script>

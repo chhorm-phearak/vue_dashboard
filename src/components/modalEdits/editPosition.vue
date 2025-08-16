@@ -1,51 +1,206 @@
 <template>
-  <n-modal v-model:show="modelValue">
-    <n-form @submit.prevent="handleSubmit">
-      <n-input v-model:value="form.title" />
-      <n-input v-model:value="form.position_description" />
-      <n-select
-        v-model:value="form.division_id"
-        :options="divisionOptions"
-        label-field="division_name"
-        value-field="id"
-      />
-      <n-button type="primary" @click="handleSubmit">Update</n-button>
+  <!-- Modal -->
+  <n-modal
+    title="Edit Position"
+    :closable="true"
+    v-model:show="showModalEdit"
+    class="!w-[390px] md:!w-[640px] lg:!w-[800px]"
+    preset="card"
+    :style="{
+      top: '0%',
+      transform: 'translateY(0%)',
+      transition: 'transform 0.3s ease, opacity 0.3s ease',
+      margin: '0 auto',
+    }"
+    :bordered="false"
+    :segmented="segmented"
+    @close="closeModalEdit"
+  >
+    <n-form ref="formRef" :model="model" :rules="rules" class="flex flex-col">
+      <div class="grid gap-4 mb-2 md:grid-cols-1 w-full">
+        <n-form-item path="title" label="Title">
+          <n-input v-model:value="model.title" @keydown.enter.prevent />
+        </n-form-item>
+        <n-form-item path="position_description" label="Description">
+          <n-input v-model:value="model.position_description" @keydown.enter.prevent />
+        </n-form-item>
+      </div>
+      <div class="grid gap-4 mb-2 md:grid-cols-1 w-full">
+        <n-form-item path="division_id" label="Division">
+          <n-select
+            v-model:value="model.division_id"
+            placeholder="Select"
+            :options="divisionOptions"
+          />
+        </n-form-item>
+      </div>
+
+      <div class="flex justify-end pt-3 pb-1">
+        <n-button
+          class="!p-[10px] !bg-blue-500 hover:!bg-[#18A058] !text-white !rounded-md"
+          @click="submitUpdatePosition"
+        >
+          <div class="flex gap-2 items-center">
+            <n-icon size="22">
+              <component :is="UpdateIcon" />
+            </n-icon>
+            <span class="font-bold">Update</span>
+          </div>
+        </n-button>
+      </div>
     </n-form>
   </n-modal>
+  <!-- End Modal -->
 </template>
 
-<script setup>
-import { ref, watch, computed } from 'vue'
-import { usePositionStore } from '@/stores/position'
+<script>
+import { CreateOutline as UpdateIcon } from "@vicons/ionicons5";
+import { defineComponent, ref, watch, onMounted, computed } from "vue";
+import { useMessage } from "naive-ui";
+import { useStore } from "vuex";
 
-const props = defineProps({ modelValue: Boolean, editData: Object, divisions: Array })
-const emit = defineEmits(['refresh', 'close'])
+export default defineComponent({
+  props: {
+    modelValue: {
+      type: Boolean,
+      required: true,
+    },
+    segmented: {
+      type: Boolean,
+      default: false,
+    },
+    editData: {
+      type: Object,
+      default: null,
+    },
+  },
+  emits: ["update:modelValue", "close", "refresh"],
+  setup(props, { emit }) {
+    const message = useMessage();
+    const store = useStore();
 
-const form = ref({
-  title: '',
-  position_description: '',
-  division_id: null
-})
+    const showModalEdit = ref(props.modelValue);
+    const formRef = ref(null);
+    const divisions = ref([]);
 
-watch(() => props.editData, (val) => {
-  if (val) {
-    form.value = {
-      title: val.title,
-      position_description: val.position_description,
-      division_id: val.division_id
+    const modelRef = ref({
+      title: null,
+      position_description: null,
+      division_id: null,
+    });
+
+    const rules = {
+      title: [
+        {
+          required: true,
+          trigger: ["blur", "input"],
+          message: "Please input Title of the Position",
+        },
+      ],
+      position_description: [
+        {
+          required: true,
+          trigger: ["blur", "input"],
+          message: "Please input Description of the Position",
+        },
+      ],
+      division_id: [
+        {
+          required: true,
+          trigger: ["blur", "change"],
+          message: "Please select Division",
+        },
+      ],
+    };
+
+    const divisionOptions = computed(() =>
+      divisions.value.map((d) => ({
+        label: d.division_name,
+        value: d.id,
+      }))
+    );
+
+    function loadDataDivisions() {
+      store
+        .dispatch("division/list", {
+          page: 1,
+          perPage: 10,
+          search: "",
+        })
+        .then((response) => {
+          if (response.status === 200) {
+            divisions.value = response.data.data;
+          } else {
+            console.error("Failed to fetch divisions", response);
+          }
+        });
     }
-  }
-}, { immediate: true })
 
-const divisionOptions = computed(() =>
-  props.divisions.map(d => ({ label: d.division_name, value: d.id }))
-)
+    function submitUpdatePosition(e) {
+      e.preventDefault();
+      formRef.value?.validate((errors) => {
+        if (!errors) {
+          store
+            .dispatch("position/update", modelRef.value)
+            .then(() => {
+              message.success("Position is updated successfully");
+              emit("refresh");
+              closeModalEdit();
+            })
+            .catch((error) => {
+              console.error("Error updating Position:", error);
+              message.error("Failed to update Position");
+            });
+        } else {
+          console.log(errors);
+          message.error("Invalid");
+        }
+      });
+    }
 
-const positionStore = usePositionStore()
+    function closeModalEdit() {
+      emit("update:modelValue", false);
+      emit("close");
+    }
 
-const handleSubmit = async () => {
-  await positionStore.update(props.editData.id, form.value)
-  emit('refresh')
-  emit('close')
-}
+    watch(
+      () => props.modelValue,
+      (val) => {
+        showModalEdit.value = val;
+      }
+    );
+
+    watch(showModalEdit, (val) => {
+      emit("update:modelValue", val);
+    });
+
+    watch(
+      () => props.editData,
+      (val) => {
+        if (val) {
+          modelRef.value = {
+            ...val,
+            id: val.id,
+            position_description: val.position_description ?? "",
+          };
+        }
+      }
+    );
+
+    onMounted(() => {
+      loadDataDivisions();
+    });
+
+    return {
+      showModalEdit,
+      closeModalEdit,
+      formRef,
+      model: modelRef,
+      rules,
+      divisionOptions,
+      submitUpdatePosition,
+      UpdateIcon,
+    };
+  },
+});
 </script>

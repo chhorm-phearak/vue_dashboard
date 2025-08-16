@@ -34,7 +34,7 @@
     <DeletePosition
       v-model:modelValue="modalDelete"
       :edit-data="deleteData"
-      @refresh="loadDataGuardians"
+      @refresh="loadDataPositions"
       @close="closeModalDelete"
     />
     <TablePosition
@@ -86,7 +86,7 @@ export default {
       modalEdit.value = true;
     }
 
-    const deleteData = ref({}); // selected delete guardian
+    const deleteData = ref({}); // selected delete 
 
     function openDelete(row) {
       deleteData.value = { ...row }; // must include id
@@ -161,17 +161,4 @@ export default {
   },
 };
 
-// store
-//   .dispatch("guardian/list", {
-//     page: 1,
-//     perPage: 10,
-//     search: "",
-//   })
-//   .then((response) => {
-//     if (response.status === 200) {
-//       table.records = response.data.data;
-//     } else {
-//       console.error("Failed to fetch guardians", response);
-//     }
-//   });
 </script>

@@ -31,7 +31,16 @@
       :edit-data="modalViewData"
       @close="closeModalView"
     />
-    <TableDivision :records="table.records" @view="openView" @edit="openEdit" />
+    <DeleteDivision
+      v-model:modelValue="modalDelete"
+      :edit-data="deleteData"
+      @refresh="loadDataDivisions"
+      @close="closeModalDelete"
+    />
+    <TableDivision :records="table.records"
+     @view="openView" 
+     @edit="openEdit" 
+     @delete="openDelete"/>
   </MainApp>
 </template>
 
@@ -43,6 +52,7 @@ import ModalDivision from "@/components/modals/modalDivision.vue";
 import EditDivision from "@/components/modalEdits/editDivision.vue";
 import ViewDivision from "@/components/modalViews/viewDivision.vue";
 import TableDivision from "@/components/tables/tableDivision.vue";
+import DeleteDivision from "@/components/modalDelete/deleteDivision.vue";
 import { useStore } from "vuex";
 
 export default {
@@ -52,6 +62,7 @@ export default {
     ModalDivision,
     EditDivision,
     ViewDivision,
+    DeleteDivision,
   },
   setup() {
     const showModal = ref(false); // for form create
@@ -62,6 +73,8 @@ export default {
     const modalView = ref(false); // for form view
     const modalViewData = ref({}); // store data for View Division
 
+     const modalDelete = ref(false);
+
     function openView(row) {
       modalViewData.value = { ...row }; // send data to modal form view
       modalView.value = true;
@@ -70,6 +83,13 @@ export default {
     function openEdit(row) {
       editData.value = { ...row }; // copy data form row to  modal form edit
       modalEdit.value = true;
+    }
+
+    const deleteData = ref({}); // selected delete
+
+    function openDelete(row) {
+      deleteData.value = { ...row }; // must include id
+      modalDelete.value = true;
     }
 
     function handleClose() {
@@ -83,6 +103,11 @@ export default {
     function closeModalView() {
       modalView.value = false;
       console.log("Modal View closed from parent");
+    }
+
+    function closeModalDelete() {
+      modalDelete.value = false;
+      console.log("Modal Delete closed from parent");
     }
 
     const store = useStore();
@@ -120,14 +145,18 @@ export default {
       modalEdit,
       editData,
       modalView,
+      modalDelete,
+      deleteData,
       openEdit,
       openView,
+      openDelete,
       modalViewData,
       table,
       loadDataDivisions,
       handleClose,
       closeModalEdit,
       closeModalView,
+      closeModalDelete,
     };
   },
 };

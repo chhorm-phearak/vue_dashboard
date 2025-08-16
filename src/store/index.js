@@ -9,6 +9,7 @@ import student from "@/store/modules/student";
 import receipt from "@/store/modules/receipt";
 import invoice from "@/store/modules/invoice";
 import division from "@/store/modules/division";
+import position from "@/store/modules/position";
 
 export default createStore({
   state: {
@@ -22,5 +23,6 @@ export default createStore({
     receipt,
     invoice,
     division,
+    position
   },
 });

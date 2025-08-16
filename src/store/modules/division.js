@@ -48,28 +48,33 @@ const actions = {
         "/read"
     );
   },
-  async create({ state, commit, rootState }, params) {
-    return await crud.Create(
-      import.meta.env.VITE_API_SERVER + "/" + state.model.name + "/create",
-      params
-    );
-  },
+   async create({ state, commit, rootState }, params) {
+      return await crud.Create(
+        import.meta.env.VITE_API_SERVER + "/" + state.model.name + "/create",
+        params
+      );
+    },
   async update({ state, commit, rootState }, params) {
-    return await crud.Update(
-      import.meta.env.VITE_API_SERVER + "/" + state.model.name + "/update",
-      params
-    );
-  },
+      return await crud.Update(
+        import.meta.env.VITE_API_SERVER +
+          "/" +
+          state.model.name +
+          "/" +
+          params.id +
+          "/update",
+        params
+      );
+    },
   async delete({ state, commit, rootState }, params) {
-    return await crud.Delete(
-      import.meta.env.VITE_API_SERVER +
-        "/" +
-        state.model.name +
-        "/" +
-        params.id +
-        "/delete"
-    );
-  },
+      return await crud.Delete(
+        import.meta.env.VITE_API_SERVER +
+          "/" +
+          state.model.name +
+          "/" +
+          params.id +
+          "/delete"
+      );
+    },
   async updateName({ state, commit, rootState }, params) {
     return await (state.name + " ++ Updated name by action");
   },
@@ -78,13 +83,13 @@ const actions = {
 // mutations (set Value to state)
 const mutations = {
   setRecords(state, records) {
-    state.records = records; // ✅ removed string concat
+    state.records = records + " + Updated records by commit";
   },
   setRecord(state, record) {
-    state.record = record;
+    state.record = record + " + Updated record by commit";
   },
   setName(state, name) {
-    state.name = name;
+    state.name = name + " + Updated name by commit";
   },
 };
 

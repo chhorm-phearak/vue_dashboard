@@ -47,11 +47,12 @@ export default defineComponent({
     records: ref([]),
   },
 
-  emits: ["edit", "view"],
+  emits: ["edit", "view","delete"],
 
   setup(props, { emit }) {
+
     const page = ref(1);
-    const pageSize = "10";
+    const pageSize = "16";
     const search = ref("");
 
     const router = useRouter();
@@ -90,6 +91,7 @@ export default defineComponent({
     }
 
     function deleteRow(row) {
+      emit("delete", row);
       message.info(`Delete clicked for ID: ${row.id}`);
     }
 
