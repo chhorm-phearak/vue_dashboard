@@ -92,7 +92,7 @@ export default defineComponent({
 
     function deleteGuardian(row) {
       emit("delete", row);
-      message.info(`Delete clicked for ID: ${row.id}`);
+      message.info(`You selected on ID : ${row.id}`);
     }
 
     function createColumns() {

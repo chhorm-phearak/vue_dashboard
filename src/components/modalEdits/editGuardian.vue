@@ -263,7 +263,7 @@ export default defineComponent({
         if (val) {
           modelRef.value = {
             ...val,
-            id: val.id, // keep id for update
+            //id: val.id, // keep id for update
             age: val.age?.toString() ?? "", //convert to string
           };
         }

@@ -105,7 +105,7 @@ export default defineComponent({
       default: false,
     },
   },
-  emits: ["update:modelValue", "close"],
+  emits: ["update:modelValue", "close", "refresh"],
   setup(props, { emit }) {
     const message = useMessage();
 
