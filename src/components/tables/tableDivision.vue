@@ -90,7 +90,7 @@ export default defineComponent({
       message.info(`You selected on ID : ${row.id}`);
     }
 
-    function deleteRow(row) {
+    function deleteDivision(row) {
       emit("delete", row);
       message.info(`Delete clicked for ID: ${row.id}`);
     }
@@ -191,7 +191,7 @@ export default defineComponent({
                         {
                           size: "small",
                           circle: true,
-                          onClick: () => deleteRow(row),
+                          onClick: () => deleteDivision(row),
                           style: {
                             width: "35px",
                             height: "35px",
@@ -222,7 +222,7 @@ export default defineComponent({
       columns: createColumns(),
       viewDivision,
       editDivision,
-      deleteRow,
+      deleteDivision,
     };
   },
 });

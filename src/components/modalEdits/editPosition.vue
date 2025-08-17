@@ -25,15 +25,12 @@
           <n-input v-model:value="model.position_description" @keydown.enter.prevent />
         </n-form-item>
       </div>
-      <div class="grid gap-4 mb-2 md:grid-cols-1 w-full">
-        <n-form-item path="division_id" label="Division">
-          <n-select
-            v-model:value="model.division_id"
-            placeholder="Select"
-            :options="divisionOptions"
-          />
-        </n-form-item>
-      </div>
+     <div class="grid gap-4 mb-2 md:grid-cols-1 w-full">
+          <n-form-item path="division_id" label="Division">
+            <n-select :key="model.division_id" v-model:value="model.division_id" placeholder="Select"
+              :options="divisionOptions" />
+          </n-form-item>
+        </div>
 
       <div class="flex justify-end pt-3 pb-1">
         <n-button
@@ -107,19 +104,19 @@ export default defineComponent({
       division_id: [
         {
           required: true,
+          type: "number",
           trigger: ["blur", "change"],
           message: "Please select Division",
         },
       ],
     };
 
-    const divisionOptions = computed(() =>
+  const divisionOptions = computed(() =>
       divisions.value.map((d) => ({
         label: d.division_name,
-        value: d.id,
+        value: Number(d.id), // ✅ use d.id here
       }))
     );
-
     function loadDataDivisions() {
       store
         .dispatch("division/list", {

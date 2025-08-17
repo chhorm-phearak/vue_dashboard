@@ -24,7 +24,6 @@
             <n-select :key="model.division_id" v-model:value="model.division_id" placeholder="Select"
               :options="divisionOptions" />
           </n-form-item>
-
         </div>
       </div>
 
