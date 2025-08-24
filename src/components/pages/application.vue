@@ -4,7 +4,7 @@
       <div
         class="flex items-center justify-between py-5 px-5 bg-white border border-gray-200 rounded-lg shadow-sm"
       >
-        <h5 class="text-xl font-bold tracking-tight text-gray-900">Staff</h5>
+        <h5 class="text-xl font-bold tracking-tight text-gray-900">Applications</h5>
         <n-button style="padding: 10px 10px" @click="showModal = true">
           <div class="flex gap-2 items-center">
             <n-icon size="24">
@@ -16,29 +16,29 @@
       </div>
     </div>
 
-    <ModalStaff
+    <ModalApplication
       v-model:modelValue="showModal"
-      @refresh="loadDataStaff"
+      @refresh="loadDataApplications"
       @close="handleClose"
     />
-    <EditStaff
+    <EditApplication
       v-model:modelValue="modalEdit"
       :edit-data="editData"
-      @refresh="loadDataStaff"
+      @refresh="loadDataApplications"
       @close="closeModalEdit"
     />
-    <ViewStaff
+    <ViewApplication
       v-model:modelValue="modalView"
       :edit-data="modalViewData"
       @close="closeModalView"
     />
-    <DeleteStaff
+    <DeleteApplication
       v-model:modelValue="modalDelete"
       :edit-data="deleteData"
-      @refresh="loadDataStaff"
+      @refresh="loadDataApplications"
       @close="closeModalDelete"
     />
-    <TableStaff
+    <TableApplication
       :records="table.records"
       @view="openView"
       @edit="openEdit"
@@ -51,28 +51,31 @@
 import { reactive, ref, onMounted } from "vue";
 import { AddCircleSharp as AddNew } from "@vicons/ionicons5";
 import MainApp from "@/components/mainApp.vue";
-import ModalStaff from "@/components/modals/modalStaff.vue";
-import EditStaff from "@/components/modalEdits/editStaff.vue";
-import ViewStaff from "@/components/modalViews/viewStaff.vue";
-import DeleteStaff from "@/components/modalDelete/deleteStaff.vue";
-import TableStaff from "@/components/tables/tableStaff.vue";
+import ModalApplication from "@/components/modals/modalApplication.vue";
+import EditApplication from "@/components/modalEdits/editApplication.vue";
+import ViewApplication from "@/components/modalViews/viewApplication.vue";
+import DeleteApplication from "@/components/modalDelete/deleteApplication.vue";
+import TableApplication from "@/components/tables/tableApplication.vue";
 import { useStore } from "vuex";
 
 export default {
   components: {
     MainApp,
-    TableStaff,
-    ModalStaff,
-    EditStaff,
-    ViewStaff,
-    DeleteStaff,
+    TableApplication,
+    ModalApplication,
+    EditApplication,
+    ViewApplication,
+    DeleteApplication,
   },
   setup() {
     const showModal = ref(false);
+
     const modalEdit = ref(false);
     const editData = ref(null);
+
     const modalView = ref(false);
     const modalViewData = ref({});
+    
     const modalDelete = ref(false);
     const deleteData = ref({});
 
@@ -119,9 +122,9 @@ export default {
       records: [],
     });
 
-    function loadDataStaff() {
+    function loadDataApplications() {
       return store
-        .dispatch("staff/list", {
+        .dispatch("application/list", {
           page: table.page,
           perPage: table.perPage,
           search: table.search,
@@ -130,13 +133,13 @@ export default {
           if (response.status === 200) {
             table.records = response.data.data;
           } else {
-            console.error("Failed to fetch staff", response);
+            console.error("Failed to fetch applications", response);
           }
         });
     }
 
     onMounted(() => {
-      loadDataStaff();
+      loadDataApplications();
     });
 
     return {
@@ -156,7 +159,7 @@ export default {
       closeModalView,
       closeModalDelete,
       table,
-      loadDataStaff,
+      loadDataApplications,
     };
   },
 };

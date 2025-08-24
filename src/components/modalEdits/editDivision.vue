@@ -64,7 +64,7 @@ export default defineComponent({
     },
     editData: { type: Object, default: null },
   },
-  emits: ["update:modelValue", "close"],
+  emits: ["update:modelValue", "close", "refresh"],
   setup(props, { emit }) {
     const message = useMessage();
     const showModalEdit = ref(props.modelValue);

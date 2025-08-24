@@ -25,6 +25,7 @@ import authorizedPerson from "@/components/pages/authorizedPerson.vue";
 import authorizedPersonAssignStudent from "@/components/pages/authorizedPersonAssignStudent.vue";
 import curriculumn from "../components/pages/curriculumn.vue";
 import viewuser from "@/components/pages/viewuser.vue";
+import application from "@/components/pages/application.vue";
 
 const routes = [
   {
@@ -156,6 +157,11 @@ const routes = [
     path: "/authorizedPersonAssignStudent",
     name: "AuthorizedPersonAssignStudent",
     component: authorizedPersonAssignStudent,
+  },
+  {
+    path: "/application",
+    name: "Application",
+    component: application,
   },
   {
     path: "/curriculumn",

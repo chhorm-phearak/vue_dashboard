@@ -1,9 +1,9 @@
 <template>
   <!-- Modal -->
   <n-modal
-    title="Create Permission"
+    title="Edit Permission"
     :closable="true"
-    v-model:show="showModal"
+    v-model:show="showModalEdit"
     class="!w-[390px] md:!w-[640px] lg:!w-[800px]"
     preset="card"
     :style="{
@@ -14,65 +14,60 @@
     }"
     :bordered="false"
     :segmented="segmented"
-    @close="handleClose"
+    @close="closeModalEdit"
   >
     <n-form ref="formRef" :model="model" :rules="rules" class="flex flex-col">
-      <!-- Scrollable content wrapper -->
-      <div class="max-h-[60vh] overflow-y-auto pr-2">
-        <div class="grid gap-4 mb-2 md:grid-cols-1 w-full">
-          <n-form-item path="permission_name" label="Permission Name">
-            <n-input v-model:value="model.permission_name" @keydown.enter.prevent />
-          </n-form-item>
-          <n-form-item path="permission_description" label="Description">
-            <n-input v-model:value="model.permission_description" @keydown.enter.prevent />
-          </n-form-item>
-        </div>
-
-        <div class="grid gap-4 mb-2 md:grid-cols-1 w-full">
-          <n-form-item path="division_ids" label="Divisions">
-            <n-select
-              v-model:value="model.division_ids"
-              placeholder="Select divisions"
-              :options="divisionOptions"
-              multiple
-              clearable
-            />
-          </n-form-item>
-
-          <n-form-item path="position_ids" label="Positions">
-            <n-select
-              v-model:value="model.position_ids"
-              placeholder="Select positions"
-              :options="positionOptions"
-              multiple
-              clearable
-            />
-          </n-form-item>
-        </div>
+      <div class="grid gap-4 mb-2 md:grid-cols-1 w-full">
+        <n-form-item path="permission_name" label="Permission Name">
+          <n-input v-model:value="model.permission_name" @keydown.enter.prevent />
+        </n-form-item>
+        <n-form-item path="permission_description" label="Description">
+          <n-input v-model:value="model.permission_description" @keydown.enter.prevent />
+        </n-form-item>
       </div>
 
-      <!-- Button stays outside scroll -->
+      <div class="grid gap-4 mb-2 md:grid-cols-1 w-full">
+        <n-form-item path="division_ids" label="Divisions">
+          <n-select
+            v-model:value="model.division_ids"
+            placeholder="Select divisions"
+            :options="divisionOptions"
+            multiple
+            clearable
+          />
+        </n-form-item>
+
+        <n-form-item path="position_ids" label="Positions">
+          <n-select
+            v-model:value="model.position_ids"
+            placeholder="Select positions"
+            :options="positionOptions"
+            multiple
+            clearable
+          />
+        </n-form-item>
+      </div>
+
       <div class="flex justify-end pt-3 pb-1">
         <n-button
           class="!p-[10px] !bg-blue-500 hover:!bg-[#18A058] !text-white !rounded-md"
-          @click="handleValidateButtonClick"
+          @click="submitUpdatePermission"
         >
           <div class="flex gap-2 items-center">
             <n-icon size="22">
-              <component :is="CreatePermission" />
+              <component :is="UpdateIcon" />
             </n-icon>
-            <span class="font-bold">Create</span>
+            <span class="font-bold">Update</span>
           </div>
         </n-button>
       </div>
     </n-form>
   </n-modal>
-  <!-- End Modal -->
 </template>
 
 <script>
-import { CreateOutline as CreatePermission } from "@vicons/ionicons5";
-import { defineComponent, ref, onMounted, watch, computed } from "vue";
+import { CreateOutline as UpdateIcon } from "@vicons/ionicons5";
+import { defineComponent, ref, watch, onMounted, computed } from "vue";
 import { useMessage } from "naive-ui";
 import { useStore } from "vuex";
 
@@ -86,18 +81,23 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    editData: {
+      type: Object,
+      default: null,
+    },
   },
   emits: ["update:modelValue", "close", "refresh"],
   setup(props, { emit }) {
     const message = useMessage();
     const store = useStore();
 
-    const showModal = ref(props.modelValue);
+    const showModalEdit = ref(props.modelValue);
     const formRef = ref(null);
     const divisions = ref([]);
     const positions = ref([]);
 
     const modelRef = ref({
+      id: null,
       permission_name: null,
       permission_description: null,
       division_ids: [],
@@ -153,7 +153,11 @@ export default defineComponent({
 
     function loadDataDivisions() {
       store
-        .dispatch("division/list", { page: 1, perPage: 100, search: "" })
+        .dispatch("division/list", {
+          page: 1,
+          perPage: 100,
+          search: "",
+        })
         .then((response) => {
           if (response.status === 200) {
             divisions.value = response.data.data;
@@ -165,7 +169,11 @@ export default defineComponent({
 
     function loadDataPositions() {
       store
-        .dispatch("position/list", { page: 1, perPage: 100, search: "" })
+        .dispatch("position/list", {
+          page: 1,
+          perPage: 100,
+          search: "",
+        })
         .then((response) => {
           if (response.status === 200) {
             positions.value = response.data.data;
@@ -175,30 +183,29 @@ export default defineComponent({
         });
     }
 
-    function resetForm() {
-      modelRef.value = {
-        permission_name: null,
-        permission_description: null,
-        division_ids: [],
-        position_ids: [],
-      };
-      formRef.value?.restoreValidation();
-    }
-
-    function handleValidateButtonClick() {
+    function submitUpdatePermission(e) {
+      e.preventDefault();
       formRef.value?.validate((errors) => {
         if (!errors) {
-          store.dispatch("permission/create", modelRef.value).then(() => {
-            emit("refresh");
-            emit("close");
-          });
+          store
+            .dispatch("permission/update", modelRef.value)
+            .then(() => {
+              message.success("Permission is updated successfully");
+              emit("refresh");
+              closeModalEdit();
+            })
+            .catch((error) => {
+              console.error("Error updating Permission:", error);
+              message.error("Failed to update Permission");
+            });
         } else {
-          console.log("Validation errors:", JSON.stringify(errors, null, 2));
+          console.log(errors);
+          message.error("Invalid");
         }
       });
     }
 
-    function handleClose() {
+    function closeModalEdit() {
       emit("update:modelValue", false);
       emit("close");
     }
@@ -206,13 +213,28 @@ export default defineComponent({
     watch(
       () => props.modelValue,
       (val) => {
-        showModal.value = val;
+        showModalEdit.value = val;
       }
     );
 
-    watch(showModal, (val) => {
+    watch(showModalEdit, (val) => {
       emit("update:modelValue", val);
     });
+
+    watch(
+      () => props.editData,
+      (val) => {
+        if (val) {
+          modelRef.value = {
+            id: val.id,
+            permission_name: val.permission_name ?? "",
+            permission_description: val.permission_description ?? "",
+            division_ids: val.divisions?.map((d) => Number(d.id)) ?? [],
+            position_ids: val.positions?.map((p) => Number(p.id)) ?? [],
+          };
+        }
+      }
+    );
 
     onMounted(() => {
       loadDataDivisions();
@@ -220,16 +242,15 @@ export default defineComponent({
     });
 
     return {
-      showModal,
-      handleClose,
+      showModalEdit,
+      closeModalEdit,
       formRef,
       model: modelRef,
       rules,
       divisionOptions,
       positionOptions,
-      resetForm,
-      handleValidateButtonClick,
-      CreatePermission,
+      submitUpdatePermission,
+      UpdateIcon,
     };
   },
 });

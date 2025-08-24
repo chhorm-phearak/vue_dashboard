@@ -59,19 +59,19 @@ export default defineComponent({
       filteredData.value.slice((page.value - 1) * pageSize, page.value * pageSize)
     );
 
-    function viewStaff(row) {
+    function viewApplication(row) {
       emit("view", row);
-      message.info(`Viewing staff ID: ${row.id}`);
+      message.info(`Viewing application ID: ${row.id}`);
     }
 
-    function editStaff(row) {
+    function editApplication(row) {
       emit("edit", row);
-      message.info(`Editing staff ID: ${row.id}`);
+      message.info(`Editing application ID: ${row.id}`);
     }
 
-    function deleteStaff(row) {
+    function deleteApplication(row) {
       emit("delete", row);
-      message.info(`Deleting staff ID: ${row.id}`);
+      message.info(`Deleting application ID: ${row.id}`);
     }
 
     function createColumns() {
@@ -117,7 +117,7 @@ export default defineComponent({
                         {
                           size: "small",
                           circle: true,
-                          onClick: () => viewStaff(row),
+                          onClick: () => viewApplication(row),
                           style: {
                             width: "35px",
                             height: "35px",
@@ -140,7 +140,7 @@ export default defineComponent({
                         {
                           size: "small",
                           circle: true,
-                          onClick: () => editStaff(row),
+                          onClick: () => editApplication(row),
                           style: {
                             width: "35px",
                             height: "35px",
@@ -163,7 +163,7 @@ export default defineComponent({
                         {
                           size: "small",
                           circle: true,
-                          onClick: () => deleteStaff(row),
+                          onClick: () => deleteApplication(row),
                           style: {
                             width: "35px",
                             height: "35px",
@@ -189,9 +189,9 @@ export default defineComponent({
       page,
       pagedData,
       columns: createColumns(),
-      viewStaff,
-      editStaff,
-      deleteStaff,
+      viewApplication,
+      editApplication,
+      deleteApplication,
     };
   },
 });

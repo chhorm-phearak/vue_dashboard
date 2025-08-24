@@ -3,9 +3,11 @@ import crud from "../../api/crud";
 // state (Property is an name of Attribute)
 const state = {
   model: {
-    name: "staff",
-    title: "I am staff",
+    name: "application",
+    title: "I am application",
   },
+  // records: [],
+  // record: null,
   records: null,
   record: null,
   name: "Default no name",
@@ -30,7 +32,7 @@ const actions = {
     return await crud.List(
       import.meta.env.VITE_API_SERVER +
         "/" +
-        state.model.name +
+        state.model.name + //app
         "/list?" +
         new URLSearchParams({
           search: params.search,
@@ -50,12 +52,12 @@ const actions = {
     );
   },
   async create({ state, commit, rootState }, params) {
-      return await crud.Create(
-        import.meta.env.VITE_API_SERVER + "/" + state.model.name + "/create",
-        params
-      );
+    return await crud.Create(
+      import.meta.env.VITE_API_SERVER + "/" + state.model.name + "/create",
+      params
+    );
     },
-async update({ state, commit, rootState }, params) {
+  async update({ state, commit, rootState }, params) {
     return await crud.Update(
       import.meta.env.VITE_API_SERVER +
         "/" +
@@ -66,7 +68,8 @@ async update({ state, commit, rootState }, params) {
       params
     );
   },
-  
+ 
+
   async delete({ state, commit, rootState }, params) {
     return await crud.Delete(
       import.meta.env.VITE_API_SERVER +
@@ -97,8 +100,8 @@ const mutations = {
 
 export default {
   namespaced: true,
-  state,
-  getters,
-  actions,
-  mutations,
+  state, //Property
+  getters, //Read value from state
+  actions, //Do crud functions with from server
+  mutations, //Set value to state
 };

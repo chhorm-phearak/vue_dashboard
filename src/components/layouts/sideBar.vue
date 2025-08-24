@@ -252,6 +252,11 @@ export default defineComponent({
         key: "Setting",
         icon: renderIcon(SettingIcon),
       },
+       {
+        label: "Application",
+        key: "Application",
+        icon: renderIcon(SettingIcon),
+      },
 
       // Dropdown Menu
       // {

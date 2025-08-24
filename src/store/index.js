@@ -10,7 +10,8 @@ import receipt from "@/store/modules/receipt";
 import invoice from "@/store/modules/invoice";
 import division from "@/store/modules/division";
 import position from "@/store/modules/position";
-
+import permission from "@/store/modules/permission";
+import application from "@/store/modules/application";
 export default createStore({
   state: {
     company: "TESING...",
@@ -23,6 +24,8 @@ export default createStore({
     receipt,
     invoice,
     division,
-    position
+    position,
+    permission,
+    application,
   },
 });
