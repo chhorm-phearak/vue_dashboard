@@ -3,7 +3,7 @@ import crud from "../../api/crud";
 // state (Property is an name of Attribute)
 const state = {
   model: {
-    name: "bus", // ✅ changed from "staff"
+    name: "userRole", // ✅ changed from "staff"
     title: "I am admin",
   },
   records: null,

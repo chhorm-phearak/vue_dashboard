@@ -1,22 +1,102 @@
 import crud from "../../api/crud";
-import { setToken } from "../../plugins/authentication";
 
 // state (Property is an name of Attribute)
-const state = {};
+const state = {
+  model: {
+    name: "user", // ✅ changed from "staff"
+    title: "I am admin",
+  },
+  records: null,
+  record: null,
+  name: "Default no name",
+};
 
-// getters (read Value from from state)
-const getters = {};
+// getters (read Value from state)
+const getters = {
+  getRecords(state) {
+    return state.records;
+  },
+  getRecord(state) {
+    return state.record;
+  },
+  getName(state) {
+    return state.name;
+  },
+};
 
 // actions (do CRUD function)
-const actions = {};
+const actions = {
+  async list({ state, commit }, params) {
+   return await crud.List(
+      import.meta.env.VITE_API_SERVER + "/" +
+        state.model.name + //division
+        "/list?" +
+        new URLSearchParams({
+          search: params.search,
+          perPage: params.perPage,
+          page: params.page,
+        }).toString()
+    );
+  },
+  async read({ state, commit, rootState }, params) {
+    return await crud.Read(
+      import.meta.env.VITE_API_SERVER +
+        "/" +
+        state.model.name +
+        "/" +
+        params.id +
+        "/read"
+    );
+  },
+   async create({ state, commit, rootState }, params) {
+      return await crud.Create(
+        import.meta.env.VITE_API_SERVER + "/" + state.model.name + "/create",
+        params
+      );
+    },
+  async update({ state, commit, rootState }, params) {
+      return await crud.Update(
+        import.meta.env.VITE_API_SERVER +
+          "/" +
+          state.model.name +
+          "/" +
+          params.id +
+          "/update",
+        params
+      );
+    },
+  async delete({ state, commit, rootState }, params) {
+      return await crud.Delete(
+        import.meta.env.VITE_API_SERVER +
+          "/" +
+          state.model.name +
+          "/" +
+          params.id +
+          "/delete"
+      );
+    },
+  async updateName({ state, commit, rootState }, params) {
+    return await (state.name + " ++ Updated name by action");
+  },
+};
 
 // mutations (set Value to state)
-const mutations = {};
+const mutations = {
+  setRecords(state, records) {
+    state.records = records + " + Updated records by commit";
+  },
+  setRecord(state, record) {
+    state.record = record + " + Updated record by commit";
+  },
+  setName(state, name) {
+    state.name = name + " + Updated name by commit";
+  },
+};
 
 export default {
   namespaced: true,
-  state, //Property
-  getters, //Read value from state
-  actions, //Do crud functions with from server
-  mutations, //Set value to state
+  state,
+  getters,
+  actions,
+  mutations,
 };

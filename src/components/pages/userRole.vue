@@ -1,10 +1,11 @@
 <template>
   <MainApp>
+    <!-- Header -->
     <div class="grid grid-cols-1 mb-4">
       <div
         class="flex items-center justify-between py-5 px-5 bg-white border border-gray-200 rounded-lg shadow-sm"
       >
-        <h5 class="text-xl font-bold tracking-tight text-gray-900">Role</h5>
+        <h5 class="text-xl font-bold tracking-tight text-gray-900">User Role</h5>
         <n-button style="padding: 10px 10px" @click="showModal = true">
           <div class="flex gap-2 items-center">
             <n-icon size="24">
@@ -16,29 +17,32 @@
       </div>
     </div>
 
-    <ModalRole
+    <!-- Modals -->
+    <ModalUserRole
       v-model:modelValue="showModal"
-      @refresh="loadDataRoles"
+      @refresh="loadDataUserRoles"
       @close="handleClose"
     />
-    <EditRole
+    <EditUserRole
       v-model:modelValue="modalEdit"
       :edit-data="editData"
-      @refresh="loadDataRoles"
+      @refresh="loadDataUserRoles"
       @close="closeModalEdit"
     />
-    <ViewRole
+    <ViewUserRole
       v-model:modelValue="modalView"
       :edit-data="modalViewData"
       @close="closeModalView"
     />
-    <DeleteRole
+    <DeleteUserRole
       v-model:modelValue="modalDelete"
       :edit-data="deleteData"
-      @refresh="loadDataRoles"
+      @refresh="loadDataUserRoles"
       @close="closeModalDelete"
     />
-    <TableRole
+
+    <!-- Table -->
+    <TableUserRole
       :records="table.records"
       @view="openView"
       @edit="openEdit"
@@ -51,33 +55,45 @@
 import { reactive, ref, onMounted } from "vue";
 import { AddCircleSharp as AddNew } from "@vicons/ionicons5";
 import MainApp from "@/components/mainApp.vue";
-import ModalRole from "@/components/modals/modalRole.vue";
-import EditRole from "@/components/modalEdits/editRole.vue";
-import ViewRole from "@/components/modalViews/viewRole.vue";
-import TableRole from "@/components/tables/tableRole.vue";
-import DeleteRole from "@/components/modalDelete/deleteRole.vue";
+import ModalUserRole from "@/components/modals/modalUserRole.vue";
+import EditUserRole from "@/components/modalEdits/editUserRole.vue";
+import ViewUserRole from "@/components/modalViews/viewUserRole.vue";
+import DeleteUserRole from "@/components/modalDelete/deleteUserRole.vue";
+import TableUserRole from "@/components/tables/tableUserRole.vue";
 import { useStore } from "vuex";
 
 export default {
   components: {
     MainApp,
-    TableRole,
-    ModalRole,
-    EditRole,
-    ViewRole,
-    DeleteRole,
+    TableUserRole,
+    ModalUserRole,
+    EditUserRole,
+    ViewUserRole,
+    DeleteUserRole,
   },
   setup() {
+    const store = useStore();
+
+    // Modal states
     const showModal = ref(false);
     const modalEdit = ref(false);
-    const editData = ref(null);
-
     const modalView = ref(false);
-    const modalViewData = ref({});
-
     const modalDelete = ref(false);
+
+    // Modal data
+    const editData = ref(null);
+    const modalViewData = ref({});
     const deleteData = ref({});
 
+    // Table state
+    const table = reactive({
+      page: 1,
+      perPage: 10,
+      search: "",
+      records: [],
+    });
+
+    // Modal handlers
     function openView(row) {
       modalViewData.value = { ...row };
       modalView.value = true;
@@ -95,32 +111,24 @@ export default {
 
     function handleClose() {
       showModal.value = false;
-      console.log("Modal Create closed from parent");
     }
+
     function closeModalEdit() {
       modalEdit.value = false;
-      console.log("Modal Edit closed from parent");
     }
+
     function closeModalView() {
       modalView.value = false;
-      console.log("Modal View closed from parent");
     }
+
     function closeModalDelete() {
       modalDelete.value = false;
-      console.log("Modal Delete closed from parent");
     }
 
-    const store = useStore();
-    const table = reactive({
-      page: 1,
-      perPage: 10,
-      search: "",
-      records: [],
-    });
-
-    function loadDataRoles() {
+    // Data loader
+    function loadDataUserRoles() {
       store
-        .dispatch("role/list", {
+        .dispatch("userRole/list", {
           page: table.page,
           perPage: table.perPage,
           search: table.search,
@@ -129,33 +137,33 @@ export default {
           if (response.status === 200) {
             table.records = response.data.data;
           } else {
-            console.error("Failed to fetch roles", response);
+            console.error("Failed to fetch user roles", response);
           }
         });
     }
 
     onMounted(() => {
-      loadDataRoles();
+      loadDataUserRoles();
     });
 
     return {
       AddNew,
       showModal,
       modalEdit,
-      editData,
       modalView,
       modalDelete,
-      deleteData,
-      openEdit,
-      openView,
-      openDelete,
+      editData,
       modalViewData,
-      table,
-      loadDataRoles,
+      deleteData,
+      openView,
+      openEdit,
+      openDelete,
       handleClose,
       closeModalEdit,
       closeModalView,
       closeModalDelete,
+      table,
+      loadDataUserRoles,
     };
   },
 };

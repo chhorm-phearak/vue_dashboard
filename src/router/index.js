@@ -5,7 +5,7 @@ import dashboard from "@/components/pages/dashBoard.vue";
 import staff from "@/components/pages/staff.vue";
 import attendance from "@/components/pages/attendance.vue";
 import user from "@/components/pages/user.vue";
-import userAssignRole from "@/components/pages/userAssignRole.vue";
+import userRole from "@/components/pages/userRole.vue";
 import bus from "@/components/pages/bus.vue";
 import division from "@/components/pages/division.vue";
 import permission from "@/components/pages/permission.vue";
@@ -24,8 +24,8 @@ import studentAssignBus from "@/components/pages/studentAssignBus.vue";
 import authorizedPerson from "@/components/pages/authorizedPerson.vue";
 import authorizedPersonAssignStudent from "@/components/pages/authorizedPersonAssignStudent.vue";
 import curriculumn from "../components/pages/curriculumn.vue";
-import viewuser from "@/components/pages/viewuser.vue";
 import application from "@/components/pages/application.vue";
+import viewuser from "@/components/pages/viewuser.vue";
 
 const routes = [
   {
@@ -64,9 +64,9 @@ const routes = [
 
   // new continue
   {
-    path: "/userAssignRole",
-    name: "UserAssignRole",
-    component: userAssignRole,
+    path: "/userRole",
+    name: "UserRole",
+    component: userRole,
   },
   {
     path: "/bus",

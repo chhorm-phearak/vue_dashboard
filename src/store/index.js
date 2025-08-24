@@ -12,6 +12,9 @@ import division from "@/store/modules/division";
 import position from "@/store/modules/position";
 import permission from "@/store/modules/permission";
 import application from "@/store/modules/application";
+import role from "@/store/modules/role";
+import userRole from "@/store/modules/userRole";
+import bus from "@/store/modules/bus";
 export default createStore({
   state: {
     company: "TESING...",
@@ -27,5 +30,8 @@ export default createStore({
     position,
     permission,
     application,
+    role,
+    userRole,
+    bus,
   },
 });

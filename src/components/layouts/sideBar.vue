@@ -56,7 +56,7 @@ import {
   Receipt as ReceiptIcon,
   BookOutline as CurriculumnIcon ,
   PeopleOutline as RoleIcon,
-  KeyOutline as UserAssignRoleIcon,
+  KeyOutline as UserRoleIcon,
 } from "@vicons/ionicons5";
 
 import { useRouter, useRoute } from "vue-router";
@@ -151,8 +151,8 @@ export default defineComponent({
       //new continue
       {
         label: "User Assign Role",
-        key: "UserAssignRole",
-        icon: renderIcon(UserAssignRoleIcon),
+        key: "UserRole",
+        icon: renderIcon(UserRoleIcon),
       },
       {
         label: "Bus",

@@ -1,7 +1,6 @@
 <template>
-  <!-- Modal -->
   <n-modal
-    title="View Information"
+    title="View User Roles"
     :closable="false"
     v-model:show="showModalView"
     class="!w-[390px] md:!w-[640px] lg:!w-[800px]"
@@ -19,26 +18,18 @@
       <div class="grid gap-4 mb-2 md:grid-cols-1 w-full">
         <div class="grid gap-4 md:grid-cols-1 w-full">
           <div class="flex gap-3">
-            <label class="font-semibold">Title:</label>
-            <div>{{ model.title }}</div>
+            <label class="font-semibold">User Name:</label>
+            <div>{{ model.name || "—" }}</div>
           </div>
           <div class="flex gap-3">
-            <label class="font-semibold">Description:</label>
-            <div>{{ model.position_description }}</div>
+            <label class="font-semibold">Email:</label>
+            <div>{{ model.email || "—" }}</div>
           </div>
           <div class="flex gap-3">
-            <label class="font-semibold">Division:</label>
+            <label class="font-semibold">Roles:</label>
             <div>
               {{
-                divisionOptions.find(opt => opt.value === model.division_id)?.label || "Unknown"
-              }}
-            </div>
-          </div>
-          <div class="flex gap-3">
-            <label class="font-semibold">Staff:</label>
-            <div>
-              {{
-                staffOptions.find(opt => opt.value === model.staff_id)?.label || "Unassigned"
+                model.roles?.map(r => r.name).join(", ") || "None"
               }}
             </div>
           </div>
@@ -60,13 +51,11 @@
       </div>
     </n-form>
   </n-modal>
-  <!-- End Modal -->
 </template>
 
 <script>
-import { defineComponent, ref, watch, onMounted, computed } from "vue";
+import { defineComponent, ref, watch } from "vue";
 import { CloseCircle as CloseIcon } from "@vicons/ionicons5";
-import { useStore } from "vuex";
 
 export default defineComponent({
   props: {
@@ -76,58 +65,8 @@ export default defineComponent({
   },
   emits: ["update:modelValue", "close"],
   setup(props, { emit }) {
-    const store = useStore();
     const showModalView = ref(props.modelValue);
     const model = ref({ ...props.editData });
-
-    const divisions = ref([]);
-    const staffList = ref([]);
-
-    const divisionOptions = computed(() =>
-      divisions.value.map((d) => ({
-        label: d.division_name,
-        value: d.id,
-      }))
-    );
-
-    const staffOptions = computed(() =>
-      staffList.value.map((s) => ({
-        label: `${s.last_name} ${s.first_name}`,
-        value: Number(s.id),
-      }))
-    );
-
-    function loadDataDivisions() {
-      store
-        .dispatch("division/list", {
-          page: 1,
-          perPage: 10,
-          search: "",
-        })
-        .then((response) => {
-          if (response.status === 200) {
-            divisions.value = response.data.data;
-          } else {
-            console.error("Failed to fetch divisions", response);
-          }
-        });
-    }
-
-    function loadDataStaff() {
-      store
-        .dispatch("staff/list", {
-          page: 1,
-          perPage: 100,
-          search: "",
-        })
-        .then((response) => {
-          if (response.status === 200) {
-            staffList.value = response.data.data;
-          } else {
-            console.error("Failed to fetch staff list", response);
-          }
-        });
-    }
 
     function closeModalView() {
       emit("update:modelValue", false);
@@ -146,18 +85,11 @@ export default defineComponent({
       model.value = { ...(val ?? {}) };
     });
 
-    onMounted(() => {
-      loadDataDivisions();
-      loadDataStaff();
-    });
-
     return {
       CloseIcon,
       showModalView,
       model,
       closeModalView,
-      divisionOptions,
-      staffOptions,
     };
   },
 });

@@ -17,35 +17,12 @@
     @close="handleClose"
   >
     <n-form ref="formRef" :model="model" :rules="rules" class="flex flex-col">
-      <!-- <div class="w-full text-start font-bold text-lg mb-8 mt-5">
-        Create Staff
-      </div> -->
       <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
-        <n-form-item path="first_name" label="First Name">
-          <n-input v-model:value="model.first_name" @keydown.enter.prevent />
+        <n-form-item path="name" label="Name">
+          <n-input v-model:value="model.name" @keydown.enter.prevent />
         </n-form-item>
-        <n-form-item path="last_name" label="Last Name">
-          <n-input v-model:value="model.last_name" @keydown.enter.prevent />
-        </n-form-item>
-      </div>
-      <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
-        <n-form-item path="age" label="Age">
-          <n-input v-model:value="model.age" @keydown.enter.prevent />
-        </n-form-item>
-        <n-form-item path="gender" label="Gender">
-          <n-select
-            v-model:value="model.gender"
-            placeholder="Select"
-            :options="genderOptions.selectGender"
-          />
-        </n-form-item>
-      </div>
-      <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
         <n-form-item path="email" label="Email">
           <n-input v-model:value="model.email" @keydown.enter.prevent />
-        </n-form-item>
-        <n-form-item path="phone" label="Mobile">
-          <n-input v-model:value="model.phone" @keydown.enter.prevent />
         </n-form-item>
       </div>
       <div class="flex justify-end pt-3 pb-1">
@@ -55,7 +32,7 @@
         >
           <div class="flex gap-2 items-center">
             <n-icon size="22">
-              <component :is="CreateStaff" />
+              <component :is="CreateUserIcon" />
             </n-icon>
             <span class="font-bold">Create</span>
           </div>
@@ -67,9 +44,10 @@
 </template>
 
 <script>
-import { CreateOutline as CreateUser } from "@vicons/ionicons5";
+import { PersonAddOutline as CreateUserIcon } from "@vicons/ionicons5";
 import { defineComponent, ref, watch } from "vue";
 import { useMessage } from "naive-ui";
+import { useStore } from "vuex";
 
 export default defineComponent({
   props: {
@@ -85,62 +63,28 @@ export default defineComponent({
   emits: ["update:modelValue", "close"],
   setup(props, { emit }) {
     const message = useMessage();
-
     const showModal = ref(props.modelValue);
 
     const formRef = ref(null);
     const modelRef = ref({
-      first_name: null,
-      last_name: null,
-      gender: null,
-      age: null,
+      name: null,
       email: null,
-      phone: null,
     });
 
-    const genderOptions = {
-      selectGender: ["Male", "Female"].map((v) => ({
-        label: v,
-        value: v,
-      })),
-    };
+    function resetForm() {
+      modelRef.value = {
+        name: null,
+        email: null,
+      };
+      formRef.value?.restoreValidation();
+    }
 
     const rules = {
-      first_name: [
+      name: [
         {
           required: true,
           trigger: ["blur", "input"],
-          message: "Please input First Name",
-        },
-      ],
-      last_name: [
-        {
-          required: true,
-          trigger: ["blur", "input"],
-          message: "Please input Last Name",
-        },
-      ],
-      age: [
-        {
-          required: true,
-          validator(rule, value) {
-            if (!value) {
-              return new Error("Age is required");
-            } else if (!/^\d*$/.test(value)) {
-              return new Error("Age should be an integer");
-            } else if (Number(value) < 18) {
-              return new Error("Age should be above 18");
-            }
-            return true;
-          },
-          trigger: ["input", "blur"],
-        },
-      ],
-      gender: [
-        {
-          required: true,
-          trigger: ["blur", "change"],
-          message: "Please select Gender",
+          message: "Please input Name",
         },
       ],
       email: [
@@ -149,21 +93,31 @@ export default defineComponent({
           trigger: ["blur", "input"],
           message: "Please input Email",
         },
-      ],
-      phone: [
         {
-          required: true,
+          type: "email",
+          message: "Invalid email format",
           trigger: ["blur", "input"],
-          message: "Please input Phone Number",
         },
       ],
     };
 
+    const store = useStore();
     function handleValidateButtonClick(e) {
       e.preventDefault();
       formRef.value?.validate((errors) => {
         if (!errors) {
-          message.success("Valid");
+          store
+            .dispatch("user/create", modelRef.value)
+            .then((res) => {
+              message.success("User created successfully");
+              emit("refresh");
+              resetForm();
+              handleClose();
+            })
+            .catch((error) => {
+              console.error("Error creating user:", error);
+              message.error("Failed to create user");
+            });
         } else {
           console.log(errors);
           message.error("Invalid");
@@ -177,13 +131,9 @@ export default defineComponent({
       console.log("Close Modal User");
     }
 
-    // Sync prop with internal ref
-    watch(
-      () => props.modelValue,
-      (val) => {
-        showModal.value = val;
-      }
-    );
+    watch(() => props.modelValue, (val) => {
+      showModal.value = val;
+    });
     watch(showModal, (val) => {
       emit("update:modelValue", val);
     });
@@ -194,9 +144,9 @@ export default defineComponent({
       formRef,
       model: modelRef,
       rules,
-      genderOptions,
+      resetForm,
       handleValidateButtonClick,
-      CreateUser,
+      CreateUserIcon,
     };
   },
 });

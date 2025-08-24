@@ -1,7 +1,6 @@
 <template>
-  <!-- Modal -->
   <n-modal
-    title="View Information"
+    title="View Bus Information"
     :closable="false"
     v-model:show="showModalView"
     class="!w-[390px] md:!w-[640px] lg:!w-[800px]"
@@ -16,31 +15,40 @@
     :segmented="segmented"
   >
     <n-form ref="formRef" :model="model" class="flex flex-col">
-      <div class="grid gap-4 mb-2 md:grid-cols-1 w-full">
+      <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
         <div class="grid gap-4 md:grid-cols-1 w-full">
           <div class="flex gap-3">
-            <label class="font-semibold">Title:</label>
-            <div>{{ model.title }}</div>
+            <label class="font-semibold">Bus Number:</label>
+            <div>{{ model.bus_number || '-' }}</div>
           </div>
           <div class="flex gap-3">
-            <label class="font-semibold">Description:</label>
-            <div>{{ model.position_description }}</div>
+            <label class="font-semibold">Route Name:</label>
+            <div>{{ model.route_name || '-' }}</div>
           </div>
           <div class="flex gap-3">
-            <label class="font-semibold">Division:</label>
+            <label class="font-semibold">License Plate:</label>
+            <div>{{ model.license_plate || '-' }}</div>
+          </div>
+          <div class="flex gap-3">
+            <label class="font-semibold">Driver:</label>
             <div>
               {{
-                divisionOptions.find(opt => opt.value === model.division_id)?.label || "Unknown"
+                model.driver
+        ? `${model.driver.last_name} ${model.driver.first_name}`
+        : driverOptions.find(opt => opt.value === model.driver_id)?.label || "-"
               }}
             </div>
           </div>
+        </div>
+
+        <div class="grid gap-4 md:grid-cols-1 w-full">
           <div class="flex gap-3">
-            <label class="font-semibold">Staff:</label>
-            <div>
-              {{
-                staffOptions.find(opt => opt.value === model.staff_id)?.label || "Unassigned"
-              }}
-            </div>
+            <label class="font-semibold">Created At:</label>
+            <div>{{ formatDate(model.created_at) }}</div>
+          </div>
+          <div class="flex gap-3">
+            <label class="font-semibold">Updated At:</label>
+            <div>{{ formatDate(model.updated_at) }}</div>
           </div>
         </div>
       </div>
@@ -60,12 +68,12 @@
       </div>
     </n-form>
   </n-modal>
-  <!-- End Modal -->
 </template>
 
 <script>
 import { defineComponent, ref, watch, onMounted, computed } from "vue";
 import { CloseCircle as CloseIcon } from "@vicons/ionicons5";
+import { format } from "date-fns";
 import { useStore } from "vuex";
 
 export default defineComponent({
@@ -80,40 +88,16 @@ export default defineComponent({
     const showModalView = ref(props.modelValue);
     const model = ref({ ...props.editData });
 
-    const divisions = ref([]);
     const staffList = ref([]);
 
-    const divisionOptions = computed(() =>
-      divisions.value.map((d) => ({
-        label: d.division_name,
-        value: d.id,
-      }))
-    );
+     const driverOptions = computed(() =>
+  staffList.value.map((staff) => ({
+    label: `${staff.last_name} ${staff.first_name}`,
+    value: Number(staff.id),
+  }))
+);
 
-    const staffOptions = computed(() =>
-      staffList.value.map((s) => ({
-        label: `${s.last_name} ${s.first_name}`,
-        value: Number(s.id),
-      }))
-    );
-
-    function loadDataDivisions() {
-      store
-        .dispatch("division/list", {
-          page: 1,
-          perPage: 10,
-          search: "",
-        })
-        .then((response) => {
-          if (response.status === 200) {
-            divisions.value = response.data.data;
-          } else {
-            console.error("Failed to fetch divisions", response);
-          }
-        });
-    }
-
-    function loadDataStaff() {
+function loadDataStaff() {
       store
         .dispatch("staff/list", {
           page: 1,
@@ -129,6 +113,10 @@ export default defineComponent({
         });
     }
 
+    const formatDate = (dateStr) => {
+      return dateStr ? format(new Date(dateStr), "yyyy-MM-dd HH:mm") : "-";
+    };
+
     function closeModalView() {
       emit("update:modelValue", false);
       emit("close");
@@ -143,11 +131,13 @@ export default defineComponent({
     });
 
     watch(() => props.editData, (val) => {
-      model.value = { ...(val ?? {}) };
+      model.value = {
+        ...(val ?? {}),
+        driver: val?.driver ?? null,
+      };
     });
 
     onMounted(() => {
-      loadDataDivisions();
       loadDataStaff();
     });
 
@@ -156,8 +146,8 @@ export default defineComponent({
       showModalView,
       model,
       closeModalView,
-      divisionOptions,
-      staffOptions,
+      driverOptions,
+      formatDate,
     };
   },
 });

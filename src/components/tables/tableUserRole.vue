@@ -1,18 +1,17 @@
 <template>
-  <!-- Data Table -->
-  <!-- h-[716px] -->
   <div
     class="relative overflow-hidden h-[716px] shadow-md border border-gray-200 rounded-lg p-4 bg-white"
   >
     <div class="flex justify-end">
       <div class="w-60 md:w-80 pb-4">
-        <n-input size="Medium" placeholder="Search User or Role">
+        <n-input v-model:value="search" size="Medium" placeholder="Search">
           <template #prefix>
             <n-icon :component="SearchIcon" />
           </template>
         </n-input>
       </div>
     </div>
+
     <n-data-table
       class="border border-gray-100 rounded-md"
       :bordered="false"
@@ -21,14 +20,12 @@
       :scroll-x="800"
       :max-height="540"
       :columns="columns"
-      :data="data"
+      :data="pagedData"
+      :pagination="false"
     />
-    <div class="flex justify-end pt-4">
-      <n-pagination v-model:page="page" :page-count="10" />
-    </div>
   </div>
-  <!-- End Data Table -->
 </template>
+
 <script>
 import { Search as SearchIcon } from "@vicons/ionicons5";
 import {
@@ -37,23 +34,52 @@ import {
   FreeCancellationTwotone as Delete,
 } from "@vicons/material";
 import { NButton, NPopover, useMessage } from "naive-ui";
-import { defineComponent, h, ref, computed } from "vue";
+import { computed, defineComponent, h, ref } from "vue";
 
 export default defineComponent({
-  setup() {
-    const message = useMessage();
+  props: {
+    records: {
+      type: Array,
+      default: () => [],
+    },
+  },
+  emits: ["edit", "view", "delete"],
+  setup(props, { emit }) {
     const page = ref(1);
-    const pageSize = 5;
+    const pageSize = 10;
     const search = ref("");
+    const message = useMessage();
 
-    function viewRow(row) {
-      message.info(`View clicked for ID: ${row.id}`);
+    const filteredData = computed(() => {
+      const val = search.value.toLowerCase();
+      return props.records.filter(
+        (u) =>
+          u.name?.toLowerCase().includes(val) ||
+          u.email?.toLowerCase().includes(val) ||
+          u.roles?.some((r) => r.name?.toLowerCase().includes(val))
+      );
+    });
+
+    const pagedData = computed(() =>
+      filteredData.value.slice(
+        (page.value - 1) * pageSize,
+        page.value * pageSize
+      )
+    );
+
+    function viewUserRole(row) {
+      emit("view", row);
+      message.info(`Viewing user ID: ${row.id}`);
     }
-    function editRow(row) {
-      message.info(`Edit clicked for ID: ${row.id}`);
+
+    function editUserRole(row) {
+      emit("edit", row);
+      message.info(`Editing user ID: ${row.id}`);
     }
-    function deleteRow(row) {
-      message.info(`Delete clicked for ID: ${row.id}`);
+
+    function deleteUserRole(row) {
+      emit("delete", row);
+      message.info(`Deleting user ID: ${row.id}`);
     }
 
     function createColumns() {
@@ -62,34 +88,40 @@ export default defineComponent({
           title: "ID",
           key: "id",
           align: "center",
-          width: 60,
         },
         {
-          title: "User",
-          key: "user",
+          title: "Name",
+          key: "name",
           align: "center",
         },
         {
-          title: "Role",
-          key: "role",
+          title: "Email",
+          key: "email",
           align: "center",
+        },
+        {
+          title: "Roles",
+          key: "roles",
+          align: "center",
+          render(row) {
+            return row.roles?.map((r) => r.name).join(", ") || "—";
+          },
         },
         {
           title: "Action",
           key: "actions",
           align: "center",
-          width: 140,
+          width: "150",
           render(row) {
-            const whenScreen = window.innerWidth <= 1024;
+            const isMobile = window.innerWidth <= 1024;
             return h(
               "div",
               {
                 style: {
                   display: "flex",
-                  flexDirection: whenScreen ? "column" : "row",
+                  flexDirection: isMobile ? "column" : "row",
                   gap: "5px",
                   justifyContent: "center",
-                  backgroundColor: "transparent",
                 },
               },
               [
@@ -103,7 +135,7 @@ export default defineComponent({
                         {
                           size: "small",
                           circle: true,
-                          onClick: () => viewRow(row),
+                          onClick: () => viewUserRole(row),
                           style: {
                             width: "35px",
                             height: "35px",
@@ -111,9 +143,7 @@ export default defineComponent({
                             backgroundColor: "#3794F2FF",
                           },
                         },
-                        {
-                          default: () => h(View, { class: "icon" }),
-                        }
+                        { default: () => h(View, { class: "icon" }) }
                       ),
                     default: () => h("span", null, "VIEW"),
                   }
@@ -128,7 +158,7 @@ export default defineComponent({
                         {
                           size: "small",
                           circle: true,
-                          onClick: () => editRow(row),
+                          onClick: () => editUserRole(row),
                           style: {
                             width: "35px",
                             height: "35px",
@@ -136,9 +166,7 @@ export default defineComponent({
                             backgroundColor: "#F2378EFF",
                           },
                         },
-                        {
-                          default: () => h(Edit, { class: "icon" }),
-                        }
+                        { default: () => h(Edit, { class: "icon" }) }
                       ),
                     default: () => h("span", null, "EDIT"),
                   }
@@ -153,7 +181,7 @@ export default defineComponent({
                         {
                           size: "small",
                           circle: true,
-                          onClick: () => deleteRow(row),
+                          onClick: () => deleteUserRole(row),
                           style: {
                             width: "35px",
                             height: "35px",
@@ -173,50 +201,15 @@ export default defineComponent({
       ];
     }
 
-    function createData() {
-      return [
-        { id: 1, user: "User 1", role: "Admin" },
-        { id: 2, user: "User 2", role: "Editor" },
-        { id: 3, user: "User 3", role: "Viewer" },
-        { id: 4, user: "User 1", role: "Editor" },
-        { id: 5, user: "User 2", role: "Viewer" },
-        { id: 6, user: "User 3", role: "Admin" },
-        { id: 7, user: "User 1", role: "Viewer" },
-        { id: 8, user: "User 2", role: "Admin" },
-        { id: 9, user: "User 3", role: "Editor" },
-        { id: 10, user: "User 1", role: "Admin" },
-      ];
-    }
-
-    const data = ref(createData());
-
-    const filteredData = computed(() => {
-      if (!search.value) return data.value;
-
-      const keyword = search.value.toLowerCase();
-      return data.value.filter(
-        (item) =>
-          item.user.toLowerCase().includes(keyword) ||
-          item.role.toLowerCase().includes(keyword)
-      );
-    });
-
-    const pageCount = computed(() =>
-      Math.ceil(filteredData.value.length / pageSize)
-    );
-
     return {
       SearchIcon,
-      data,
-      columns: createColumns(),
-      viewRow,
-      editRow,
-      deleteRow,
       page,
-      pageCount,
-      pageSize,
       search,
-      filteredData,
+      pagedData,
+      columns: createColumns(),
+      viewUserRole,
+      editUserRole,
+      deleteUserRole,
     };
   },
 });
