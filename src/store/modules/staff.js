@@ -55,16 +55,16 @@ const actions = {
         params
       );
     },
-async update({ state, commit, rootState }, params) {
-    return await crud.Update(
-      import.meta.env.VITE_API_SERVER +
-        "/" +
-        state.model.name +
-        "/" +
-        params.id +
-        "/update",
-      params
-    );
+  async update({ state, commit, rootState }, params) {
+      return await crud.Update(
+        import.meta.env.VITE_API_SERVER +
+          "/" +
+          state.model.name +
+          "/" +
+          params.id +
+          "/update",
+        params
+      );
   },
   
   async delete({ state, commit, rootState }, params) {

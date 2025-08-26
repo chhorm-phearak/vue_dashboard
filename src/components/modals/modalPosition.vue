@@ -86,14 +86,14 @@ export default defineComponent({
       ],
       position_description: [
         {
-          required: true,
+          required: false,
           trigger: ["blur", "input"],
           message: "Please input Description of the Position",
         },
       ],
       division_id: [
         {
-          required: true,
+          required: false,
           type: "number",
           trigger: ["blur", "change"],
           message: "Please select Division",

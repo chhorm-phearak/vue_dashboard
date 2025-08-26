@@ -23,19 +23,43 @@ import studentPerformanceReport from "@/components/pages/studentPerformanceRepor
 import studentAssignBus from "@/components/pages/studentAssignBus.vue";
 import authorizedPerson from "@/components/pages/authorizedPerson.vue";
 import authorizedPersonAssignStudent from "@/components/pages/authorizedPersonAssignStudent.vue";
-import curriculumn from "../components/pages/curriculumn.vue";
+import curriculumn from "@/components/pages/curriculumn.vue";
 import application from "@/components/pages/application.vue";
 import viewuser from "@/components/pages/viewuser.vue";
+import aboutUs from "../components/FrontPage/AboutUs.vue";
+import contactUs from "../components/FrontPage/ContactUs.vue";
+import home from "../components/FrontPage/Home.vue";
+import teachers from "../components/FrontPage/Teachers.vue";
 
 const routes = [
   {
     path: "/",
-    redirect: "/login",
+    redirect: "/home",
   },
   // {
   //   path: "/",
   //   redirect: "/dashboard",
   // },
+  {
+    path: "/aboutUs",
+    name: "AboutUs",
+    component: aboutUs,
+  },
+  {
+    path: "/contactUs",
+    name: "ContactUs",
+    component: contactUs,
+  },
+  {
+    path: "/home",
+    name: "Home",
+    component: home,
+  },
+  {
+    path: "/teachers",
+    name: "Teachers",
+    component: teachers,
+  },
   {
     path: "/login",
     name: "Login",

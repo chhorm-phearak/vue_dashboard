@@ -98,60 +98,12 @@ export default defineComponent({
     function createColumns() {
       return [
         {
-          title: "ID",
-          key: "id",
+          title: "Full Name",
+          key: "full_name",
           align: "center",
-        },
-        {
-          title: "First Name",
-          key: "first_name",
-          align: "center",
-        },
-        {
-          title: "Last Name",
-          key: "last_name",
-          align: "center",
-        },
-        {
-          title: "Age",
-          key: "age",
-          align: "center",
-        },
-        {
-          title: "Gender",
-          key: "guardian_gender",
-          align: "center",
-        },
-        {
-          title: "Relationship Student",
-          key: "relationship_to_student",
-          align: "center",
-          width: "200",
-        },
-        {
-          title: "Occupation",
-          key: "occupation",
-          align: "center",
-        },
-        {
-          title: "Email",
-          key: "email",
-          align: "center",
-        },
-        {
-          title: "Mobile Phone",
-          key: "phone_number",
-          align: "center",
-        },
-        {
-          title: "Address",
-          key: "address",
-          align: "center",
-        },
-        {
-          title: "Photo",
-          key: "photo_url",
-          align: "center",
+          render(row) {
+            return `${row.first_name} ${row.last_name}`;
+          },
         },
         {
           title: "Action",

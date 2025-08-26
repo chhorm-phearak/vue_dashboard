@@ -61,24 +61,13 @@
           <label class="font-semibold">Status:</label>
           <div class="font-bold text-blue-600">{{ model.status }}</div>
         </div>
-        <div class="flex gap-4">
-          <label class="font-semibold">Created At:</label>
-          <div>{{ model.created_at }}</div>
-        </div>
-        <div class="flex gap-4">
-          <label class="font-semibold">Updated At:</label>
-          <div>{{ model.updated_at }}</div>
-        </div>
 
         <!-- Photo -->
         <div class="flex gap-4 items-start col-span-2">
           <label class="font-semibold">Photo:</label>
           <div v-if="model.photo_url">
-            <img
-              :src="photoUrl"
-              alt="Staff Photo"
-              class="max-w-[200px] rounded shadow border"
-            />
+           <img :src="`${baseUrl}/uploads/staffs_img/${model.photo_url}`" alt="Guardian Photo"
+        class="max-w-[200px] rounded shadow border" />
           </div>
           <div v-else class="text-gray-500 italic">No photo uploaded</div>
         </div>
@@ -123,7 +112,7 @@ export default defineComponent({
 
     const photoUrl = computed(() =>
       model.value.photo_url
-        ? `${baseUrl}/uploads/staff_docs/${model.value.photo_url}`
+        ? `${baseUrl}/uploads/staff_img/${model.value.photo_url}`
         : null
     );
 

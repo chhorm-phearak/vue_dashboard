@@ -121,7 +121,7 @@ export default defineComponent({
       ],
       division_ids: [
         {
-          required: true,
+          required: false,
           type: "array",
           trigger: ["blur", "change"],
           message: "Please select at least one Division",
@@ -129,7 +129,7 @@ export default defineComponent({
       ],
       position_ids: [
         {
-          required: true,
+          required: false,
           type: "array",
           trigger: ["blur", "change"],
           message: "Please select at least one Position",

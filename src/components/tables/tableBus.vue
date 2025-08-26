@@ -82,7 +82,7 @@ export default defineComponent({
 
     function createColumns() {
       return [
-        { title: "ID", key: "id", align: "center" },
+        // { title: "ID", key: "id", align: "center" },
         { title: "Bus Number", key: "bus_number", align: "center" },
         { title: "Route Name", key: "route_name", align: "center" },
         { title: "License Plate", key: "license_plate", align: "center" },

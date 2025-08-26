@@ -14,10 +14,10 @@
       <div class="flex items-center gap-4 px-7 pt-5">
         <img
           class="w-8 h-8"
-          src="@/assets/logo/naivelogo-BdDVTUmz.svg"
+          src="D:\internship\kindergarten_website\KB-Real\Front_Thida\Front\vue_dashboard\src\assets\logo\AdobeExpress-file.png"
           alt="LOGO-IMG"
         />
-        <span class="text-xl"> Naive UI </span>
+        <span class="text-xl"> Kindergarten Buddy </span>
       </div>
       <n-divider class="px-4" />
       <div class="mt-[-15px] px-1">
@@ -40,7 +40,7 @@ import {
   HealthAndSafetyFilled as HealthIcon,
 } from "@vicons/material";
 
-import { ChalkboardTeacher as TeacherIcon } from "@vicons/fa";
+import { Child, ChalkboardTeacher as TeacherIcon } from "@vicons/fa";
 import {
   EventSchedule as ScheduleIcon,
   UserFavorite as GuardianIcon,
@@ -132,34 +132,23 @@ export default defineComponent({
         key: "Dashboard",
         icon: renderIcon(StorefrontIcon),
       },
+
       {
-        label: "Staff",
-        key: "Staff",
-        icon: renderIcon(PeopleIcon),
-      },
-      {
-        label: "Attendance",
+        label: "Staff Management",
         key: "Attendance",
         icon: renderIcon(AttendanceIcon),
-      },
-      {
-        label: "User",
-        key: "User",
-        icon: renderIcon(PersonIcon),
-      },
-
-      //new continue
-      {
-        label: "User Assign Role",
-        key: "UserRole",
-        icon: renderIcon(UserRoleIcon),
-      },
-      {
-        label: "Bus",
-        key: "Bus",
-        icon: renderIcon(BusIcon),
-      },
-      {
+        children: [
+          {
+            label: "Staff",
+            key: "Staff",
+            icon: renderIcon(PeopleIcon),
+          },
+          {
+            label: "Position",
+            key: "Position",
+            icon: renderIcon(SettingIcon),
+          },
+          {
         label: "Division",
         key: "Division",
         icon: renderIcon(SettingIcon),
@@ -169,11 +158,21 @@ export default defineComponent({
         key: "Permission",
         icon: renderIcon(SettingIcon),
       },
-      {
-        label: "Position",
-        key: "Position",
-        icon: renderIcon(SettingIcon),
+        ],
       },
+      
+      {
+        label: "User",
+        key: "User",
+        icon: renderIcon(PersonIcon),
+      },
+
+      {
+        label: "Bus",
+        key: "Bus",
+        icon: renderIcon(BusIcon),
+      },
+     
       {
         label: "Event",
         key: "Event",
@@ -199,11 +198,11 @@ export default defineComponent({
         key: "Receipt",
         icon: renderIcon(ReceiptIcon),
       },
-      {
-        label: "Role",
-        key: "Role",
-        icon: renderIcon(RoleIcon),
-      },
+      // {
+      //   label: "Role",
+      //   key: "Role",
+      //   icon: renderIcon(RoleIcon),
+      // },
       {
         label: "Schedule",
         key: "Schedule",
@@ -229,11 +228,11 @@ export default defineComponent({
         key: "StudentPerformanceReport",
         icon: renderIcon(SettingIcon),
       },
-      {
-        label: "Student Assign Bus",
-        key: "StudentAssignBus",
-        icon: renderIcon(SettingIcon),
-      },
+      // {
+      //   label: "Student Assign Bus",
+      //   key: "StudentAssignBus",
+      //   icon: renderIcon(SettingIcon),
+      // },
       {
         label: "Authorized Person",
         key: "AuthorizedPerson",
@@ -258,31 +257,6 @@ export default defineComponent({
         icon: renderIcon(SettingIcon),
       },
 
-      // Dropdown Menu
-      // {
-      //   label: "Dance Dance Dance",
-      //   key: "Dance Dance Dance",
-      //   icon: renderIcon(NewspaperIcon),
-      //   children: [
-      //     {
-      //       type: "group",
-      //       label: "People",
-      //       key: "people",
-      //       children: [
-      //         {
-      //           label: "Narrator",
-      //           key: "narrator",
-      //           icon: renderIcon(PersonIcon),
-      //         },
-      //         {
-      //           label: "Sheep Man",
-      //           key: "sheep-man",
-      //           icon: renderIcon(PersonIcon),
-      //         },
-      //       ],
-      //     },
-      //   ],
-      // },
     ];
 
     return {

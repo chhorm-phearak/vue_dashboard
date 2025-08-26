@@ -4,7 +4,7 @@
     title="Create Guardian"
     :closable="true"
     v-model:show="showModal"
-    class="!w-[390px] md:!w-[640px] lg:!w-[800px]"
+    class="!w-[390px] md:!w-[640px] lg:!w-[900px]"
     preset="card"
     :style="{
       top: '0%',
@@ -17,64 +17,50 @@
     @close="handleClose"
   >
     <n-form ref="formRef" :model="model" :rules="rules" class="flex flex-col">
-      <!-- <div class="w-full text-start font-bold text-lg mb-8 mt-5">
-        Create Staff
-      </div> -->
       <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
         <n-form-item path="first_name" label="First Name">
-          <n-input v-model:value="model.first_name" @keydown.enter.prevent />
+          <n-input v-model:value="model.first_name" />
         </n-form-item>
         <n-form-item path="last_name" label="Last Name">
-          <n-input v-model:value="model.last_name" @keydown.enter.prevent />
+          <n-input v-model:value="model.last_name" />
         </n-form-item>
-      </div>
-      <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
+        <n-form-item path="gender" label="Gender">
+          <n-select v-model:value="model.gender" :options="genderOptions" placeholder="Select" />
+        </n-form-item>
         <n-form-item path="age" label="Age">
-          <n-input v-model:value="model.age" @keydown.enter.prevent />
+          <n-input v-model:value.number="model.age" :min="1" @keydown.enter.prevent />
         </n-form-item>
-        <n-form-item path="guardian_gender" label="Gender">
-          <n-select
-            v-model:value="model.guardian_gender"
-            placeholder="Select"
-            :options="genderOptions.selectGender"
-          />
-        </n-form-item>
-      </div>
-      <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
-        <n-form-item
-          path="relationship_to_student"
-          label="Relationship Student"
-        >
-          <n-input
-            v-model:value="model.relationship_to_student"
-            @keydown.enter.prevent
-          />
+        <n-form-item path="address" label="Address">
+          <n-input v-model:value="model.address" />
         </n-form-item>
         <n-form-item path="occupation" label="Occupation">
-          <n-input v-model:value="model.occupation" @keydown.enter.prevent />
+          <n-input v-model:value="model.occupation" />
         </n-form-item>
       </div>
+
       <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
         <n-form-item path="email" label="Email">
-          <n-input v-model:value="model.email" @keydown.enter.prevent />
+          <n-input v-model:value="model.email" />
         </n-form-item>
-        <n-form-item path="phone_number" label="Mobile Phone">
-          <n-input v-model:value="model.phone_number" @keydown.enter.prevent />
+        <n-form-item path="phone_number" label="Phone Number">
+          <n-input v-model:value="model.phone_number" />
+        </n-form-item>
+        <n-form-item label="Photo" path="photo_url">
+          <n-upload
+            :custom-request="handleFileUpload"
+            v-model:file-list="fileList"
+            list-type="image-card"
+            accept="image/*"
+            :max="1"
+          >
+            <n-button>Upload Photo</n-button>
+          </n-upload>
         </n-form-item>
       </div>
-      <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
-        <n-form-item path="address" label="Address">
-          <n-input v-model:value="model.address" @keydown.enter.prevent />
-        </n-form-item>
-        <n-form-item path="photo_url" label="Photo">
-          <n-input v-model:value="model.photo_url" @keydown.enter.prevent />
-        </n-form-item>
-      </div>
+
       <div class="flex justify-end pt-3 pb-1">
-        <n-button
-          class="!p-[10px] !bg-blue-500 hover:!bg-[#18A058] !text-white !rounded-md"
-          @click="handleValidateButtonClick"
-        >
+        <n-button class="!p-[10px] !bg-blue-500 hover:!bg-[#18A058] !text-white !rounded-md"
+          @click="handleValidateButtonClick">
           <div class="flex gap-2 items-center">
             <n-icon size="22">
               <component :is="CreateGuardian" />
@@ -85,12 +71,11 @@
       </div>
     </n-form>
   </n-modal>
-  <!--End Modal -->
 </template>
 
 <script>
-import { CreateOutline as CreateGuardian, Storefront } from "@vicons/ionicons5";
-import { defineComponent, ref, watch } from "vue";
+import { CreateOutline as CreateGuardian } from "@vicons/ionicons5";
+import { defineComponent, ref, watch, computed, onMounted } from "vue";
 import { useMessage } from "naive-ui";
 import { useStore } from "vuex";
 
@@ -104,186 +89,175 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    editData: {
+      type: Object,
+      default: () => ({}),
+    },
   },
   emits: ["update:modelValue", "close", "refresh"],
   setup(props, { emit }) {
     const message = useMessage();
+    const store = useStore();
 
     const showModal = ref(props.modelValue);
-
     const formRef = ref(null);
-    const modelRef = ref({
+    const fileList = ref([]);
+
+    // Use editData for editing/viewing, otherwise blank for create
+    const model = ref({
       first_name: null,
       last_name: null,
+      gender: null,
       age: null,
-      guardian_gender: null,
-      relationship_to_student: null,
+      address: null,
       occupation: null,
       email: null,
       phone_number: null,
-      address: null,
       photo_url: null,
+      ...props.editData,
     });
 
-    //reset field when close modal
     function resetForm() {
-      modelRef.value = {
+      model.value = {
         first_name: null,
         last_name: null,
+        gender: null,
         age: null,
-        guardian_gender: null,
-        relationship_to_student: null,
+        address: null,
         occupation: null,
         email: null,
         phone_number: null,
-        address: null,
         photo_url: null,
       };
+      fileList.value = [];
       formRef.value?.restoreValidation();
     }
 
-    const genderOptions = {
-      selectGender: ["male", "female"].map((v) => ({
-        label: v,
-        value: v,
-      })),
-    };
-
     const rules = {
       first_name: [
-        {
-          required: true,
-          trigger: ["blur", "input"],
-          message: "Please input First Name",
-        },
+        { required: true, trigger: ["blur", "input"], message: "Please input First Name" },
       ],
       last_name: [
-        {
-          required: true,
-          trigger: ["blur", "input"],
-          message: "Please input Last Name",
-        },
+        { required: true, trigger: ["blur", "input"], message: "Please input Last Name" },
+      ],
+      gender: [
+        { required: true, trigger: ["change"], message: "Please select Gender" },
       ],
       age: [
         {
           required: true,
-          validator(rule, value) {
-            if (!value) {
-              return new Error("Age is required");
-            } else if (!/^\d*$/.test(value)) {
-              return new Error("Age should be an integer");
-            } else if (Number(value) < 5) {
-              return new Error("Age should be above 18");
-            }
-            return true;
+          validator(_, value) {
+            if (!value || isNaN(Number(value))) return Promise.reject("Please input a valid Age");
+            return Promise.resolve();
           },
-          trigger: ["input", "blur"],
-        },
-      ],
-      guardian_gender: [
-        {
-          required: true,
-          trigger: ["blur", "change"],
-          message: "Please select Gender",
-        },
-      ],
-      email: [
-        {
-          required: true,
           trigger: ["blur", "input"],
-          message: "Please input Email",
-        },
-      ],
-      relationship_to_student: [
-        {
-          required: true,
-          trigger: ["blur", "input"],
-          message: "Please input Relationship with Student",
-        },
-      ],
-      occupation: [
-        {
-          required: true,
-          trigger: ["blur", "input"],
-          message: "Please input Occupation",
-        },
-      ],
-      phone_number: [
-        {
-          required: true,
-          trigger: ["blur", "input"],
-          message: "Please input Phone Number",
         },
       ],
       address: [
-        {
-          required: true,
-          trigger: ["blur", "input"],
-          message: "Please input Address",
-        },
+        { required: true, trigger: ["blur", "input"], message: "Please input Address" },
       ],
-      photo_url: [
-        {
-          required: true,
-          trigger: ["blur", "input"],
-          message: "Please input Photo",
-        },
+      occupation: [
+        { required: true, trigger: ["blur", "input"], message: "Please input Occupation" },
       ],
+      email: [
+        { required: true, trigger: ["blur", "input"], message: "Please input Email" },
+      ],
+      phone_number: [
+        { required: true, trigger: ["blur", "input"], message: "Please input Phone Number" },
+      ],
+      photo_url: [{ required: false }],
     };
 
-    const store = useStore();
     function handleValidateButtonClick(e) {
       e.preventDefault();
       formRef.value?.validate((errors) => {
         if (!errors) {
+          const formData = new FormData();
+          for (const key in model.value) {
+            if (key === "photo_url" && fileList.value && fileList.value.length > 0) {
+              formData.append(key, fileList.value[0].file);
+            } else {
+              formData.append(key, model.value[key]);
+            }
+          }
           store
-            .dispatch("guardian/create", modelRef.value)
-            .then((res) => {
-              message.success("Guardian created successfully");
-              emit("refresh"); // tell parent to reload data
+            .dispatch("guardian/create", formData)
+            .then(() => {
+              message.success("Guardian is created successfully");
+              emit("refresh");
               resetForm();
               handleClose();
-              //emit("update:modelValue", false); // close modal
             })
             .catch((error) => {
-              console.error("Error creating guardian:", error);
-              message.error("Failed to create guardian");
+              console.error("Error creating Guardian:", error);
+              message.error("Failed to create Guardian");
             });
-          //message.success("Valid");
         } else {
-          console.log(errors);
           message.error("Invalid");
         }
       });
     }
 
+    function handleFileUpload({ file, onFinish, onError }) {
+      const formData = new FormData();
+      formData.append("photo_url", file.file);
+
+      fetch(`${import.meta.env.VITE_API_BASE}/api/guardian/upload-temp`, {
+        method: "POST",
+        body: formData,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.filename) {
+            model.value.photo_url = data.filename;
+            onFinish();
+            message.success("Photo uploaded successfully");
+          } else {
+            onError();
+            message.error("Upload failed");
+          }
+        })
+        .catch((err) => {
+          console.error("Upload error:", err);
+          onError();
+          message.error("Upload error");
+        });
+    }
+
     function handleClose() {
       emit("update:modelValue", false);
       emit("close");
-      console.log("Close Modal User");
     }
 
-    // Sync prop with internal ref
-    watch(
-      () => props.modelValue,
-      (val) => {
-        showModal.value = val;
-      }
-    );
+    watch(() => props.modelValue, (val) => {
+      showModal.value = val;
+    });
+
     watch(showModal, (val) => {
       emit("update:modelValue", val);
     });
+
+    watch(() => props.editData, (val) => {
+      model.value = { ...(val ?? {}) };
+    });
+
+    const genderOptions = [
+      { label: "Male", value: "male" },
+      { label: "Female", value: "female" },
+      { label: "Other", value: "other" },
+    ];
 
     return {
       showModal,
       handleClose,
       formRef,
-      model: modelRef,
+      model,
       rules,
-      genderOptions,
       resetForm,
       handleValidateButtonClick,
       CreateGuardian,
+      genderOptions,
+      fileList,
     };
   },
 });

@@ -1,10 +1,9 @@
 <template>
-  <!--Modal -->
   <n-modal
-    title="View Information"
+    title="View Guardian"
     :closable="false"
     v-model:show="showModalView"
-    class="!w-[390px] md:!w-[640px] lg:!w-[800px]"
+    class="!w-[390px] md:!w-[640px] lg:!w-[900px]"
     preset="card"
     :style="{
       top: '0%',
@@ -16,57 +15,44 @@
     :segmented="segmented"
   >
     <n-form ref="formRef" :model="model" class="flex flex-col">
-      <div class="grid gap-4 mb-2 md:grid-cols-2 w-full">
-        <div class="grid gap-4 md:grid-cols-1 w-full">
-          <div class="flex gap-3">
-            <label class="font-semibold">First Name:</label>
-            <div>{{ model.first_name }}</div>
-          </div>
-          <div class="flex gap-3">
-            <label class="font-semibold">Last Name:</label>
-            <div>{{ model.last_name }}</div>
-          </div>
-          <div class="flex gap-3">
-            <label class="font-semibold">Age:</label>
-            <div>{{ model.age }}</div>
-          </div>
-          <div class="flex gap-3">
-            <label class="font-semibold">Gender:</label>
-            <div>{{ model.guardian_gender }}</div>
-          </div>
-          <div class="flex gap-3">
-            <label class="font-semibold">Relationship Student:</label>
-            <div>{{ model.relationship_to_student }}</div>
-          </div>
+      <div class="grid gap-6 mb-4 md:grid-cols-2 w-full">
+        <div class="flex gap-4">
+          <label class="font-semibold">Full Name:</label>
+          <div>{{ model.first_name }} {{ model.last_name }}</div>
+        </div>
+        <div class="flex gap-4">
+          <label class="font-semibold">Gender:</label>
+          <div>{{ model.gender }}</div>
+        </div>
+        <div class="flex gap-4">
+          <label class="font-semibold">Age:</label>
+          <div>{{ model.age }}</div>
+        </div>
+        <div class="flex gap-4">
+          <label class="font-semibold">Occupation:</label>
+          <div>{{ model.occupation }}</div>
+        </div>
+        <div class="flex gap-4">
+          <label class="font-semibold">Email:</label>
+          <div>{{ model.email }}</div>
+        </div>
+        <div class="flex gap-4">
+          <label class="font-semibold">Phone:</label>
+          <div>{{ model.phone_number }}</div>
+        </div>
+        <div class="flex gap-4">
+          <label class="font-semibold">Address:</label>
+          <div>{{ model.address }}</div>
         </div>
 
-        <div class="grid gap-4 md:grid-cols-1 w-full">
-          <div class="flex gap-3">
-            <label class="font-semibold">Occupation:</label>
-            <div>{{ model.occupation }}</div>
+        <!-- Photo -->
+        <div class="flex gap-4 items-start col-span-2">
+          <label class="font-semibold">Photo:</label>
+          <div v-if="model.photo_url">
+            <img :src="`${baseUrl}/uploads/guardians_img/${model.photo_url}`" alt="Guardian Photo"
+        class="max-w-[200px] rounded shadow border" />
           </div>
-          <div class="flex gap-3">
-            <label class="font-semibold">Email:</label>
-            <div>{{ model.email }}</div>
-          </div>
-          <div class="flex gap-3">
-            <label class="font-semibold">Mobile Phone:</label>
-            <div>{{ model.phone_number }}</div>
-          </div>
-          <div class="flex gap-3">
-            <label class="font-semibold">Address:</label>
-            <div>{{ model.address }}</div>
-          </div>
-          <div>
-            <label class="font-semibold">Photo:</label>
-            <div>
-              <img
-                v-if="model.photo_url"
-                :src="model.photo_url"
-                class="w-32 h-32 object-cover rounded-md"
-              />
-            </div>
-          </div>
+          <div v-else class="text-gray-500 italic">No photo uploaded</div>
         </div>
       </div>
 
@@ -85,37 +71,29 @@
       </div>
     </n-form>
   </n-modal>
-  <!--End Modal -->
 </template>
 
 <script>
-import { defineComponent, ref, watch } from "vue";
+import { defineComponent, ref, watch, computed } from "vue";
 import { CloseCircle as CloseIcon } from "@vicons/ionicons5";
 
 export default defineComponent({
   props: {
     modelValue: { type: Boolean, required: true },
     segmented: { type: Boolean, default: false },
-    editData: { type: Object, default: () => ({}) }, // pass selected guardian
+    editData: { type: Object, default: () => ({}) },
   },
   emits: ["update:modelValue", "close"],
   setup(props, { emit }) {
     const showModalView = ref(props.modelValue);
     const model = ref({ ...props.editData });
 
-    // This watch for modal visibility
-    watch(
-      () => props.modelValue,
-      (val) => (showModalView.value = val)
-    );
-    watch(showModalView, (val) => emit("update:modelValue", val));
+    const baseUrl = import.meta.env.VITE_API_BASE;
 
-    // This watch for New Data from parent
-    watch(
-      () => props.editData,
-      (val) => {
-        model.value = { ...(val ?? {}) };
-      }
+    const photoUrl = computed(() =>
+      model.value.photo_url
+        ? `${baseUrl}/uploads/guardian_img/${model.value.photo_url}`
+        : null
     );
 
     function closeModalView() {
@@ -123,7 +101,26 @@ export default defineComponent({
       emit("close");
     }
 
-    return { CloseIcon, showModalView, model, closeModalView };
+    watch(() => props.modelValue, (val) => {
+      showModalView.value = val;
+    });
+
+    watch(showModalView, (val) => {
+      emit("update:modelValue", val);
+    });
+
+    watch(() => props.editData, (val) => {
+      model.value = { ...(val ?? {}) };
+    });
+
+    return {
+      CloseIcon,
+      showModalView,
+      model,
+      closeModalView,
+      photoUrl,
+      baseUrl,
+    };
   },
 });
 </script>

@@ -77,17 +77,17 @@ export default defineComponent({
     function createColumns() {
       return [
         {
-          title: "ID",
-          key: "id",
-          align: "center",
-        },
-        {
           title: "Full Name",
           key: "full_name",
           align: "center",
           render(row) {
             return `${row.first_name} ${row.last_name}`;
           },
+        },
+          {
+          title: "Position",
+          key: "position.title",
+          align: "center",
         },
         {
           title: "Action",

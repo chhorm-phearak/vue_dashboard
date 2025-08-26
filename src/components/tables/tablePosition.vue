@@ -96,11 +96,11 @@ export default defineComponent({
 
     function createColumns() {
       return [
-        {
-          title: "ID",
-          key: "id",
-          align: "center",
-        },
+        // {
+        //   title: "ID",
+        //   key: "id",
+        //   align: "center",
+        // },
         {
           title: "Title",
           key: "title",

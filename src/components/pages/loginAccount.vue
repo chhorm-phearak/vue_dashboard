@@ -21,7 +21,6 @@
       <span class="font-bold text-[#18A058]">LOGIN</span>
     </n-popover>
   </n-layout-header>
-  <ModalLogin v-model:modelValue="showModal" @close="handleClose" />
 </template>
 
 <script>

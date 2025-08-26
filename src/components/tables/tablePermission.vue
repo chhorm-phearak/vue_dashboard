@@ -84,11 +84,11 @@ export default defineComponent({
 
     function createColumns() {
       return [
-        {
-          title: "ID",
-          key: "id",
-          align: "center",
-        },
+        // {
+        //   title: "ID",
+        //   key: "id",
+        //   align: "center",
+        // },
         {
           title: "Permission Name",
           key: "permission_name",

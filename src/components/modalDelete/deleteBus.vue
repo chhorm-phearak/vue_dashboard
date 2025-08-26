@@ -92,8 +92,8 @@ export default defineComponent({
     function confirmDelete(e) {
       e.preventDefault();
       store
-        .dispatch("bus/delete", modelRef.value.id)
-        .then(() => {
+        .dispatch("bus/delete", modelRef.value)
+        .then((res) => {
           message.success("Bus record deleted successfully");
           emit("refresh");
           closeModelDelete();
@@ -102,7 +102,7 @@ export default defineComponent({
           console.error("Error deleting bus record:", error);
           message.error("Failed to delete bus record");
         });
-    }
+    } 
 
     return {
       AlertCircleIcon,
